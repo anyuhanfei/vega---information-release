@@ -1,0 +1,35 @@
+<?php 
+return [
+    'labels' => [
+        'IdxSetting' => '应用设置',
+        'idx-setting' => '应用设置',
+    ],
+    'fields' => [
+        'type' => '设置类型',
+        'value0' => 'value0',
+        'value1' => 'value1',
+        'value2' => 'value2',
+        'value3' => 'value3',
+        'value4' => 'value4',
+        'value5' => 'value5',
+        'value6' => 'value6',
+        'value7' => 'value7',
+        'value8' => 'value8',
+        'value9' => 'value9',
+        'value10' => 'value10',
+        'value11' => 'value11',
+        'value12' => 'value12',
+        'value13' => 'value13',
+        'value14' => 'value14',
+        'value15' => 'value15',
+        'value16' => 'value16',
+        'value17' => 'value17',
+        'value18' => 'value18',
+        'value19' => 'value19',
+        'value20' => 'value20',
+        'update_allowed' => 'update_allowed',
+        'delete_allowed' => 'delete_allowed',
+    ],
+    'options' => [
+    ],
+];
