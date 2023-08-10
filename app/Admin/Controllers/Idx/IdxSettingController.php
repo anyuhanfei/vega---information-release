@@ -98,6 +98,8 @@ class IdxSettingController extends AdminController{
                     case "select":
                         if(($field['with'] ?? '') != ''){
                             $g = $grid->column($field['with'] . '.' . $field['with_field'], $field['with_field_name']);
+                        }else{
+                            $g = $grid->column('value'. strval($i), $field['field_name']);
                         }
                         break;
                     case "file":

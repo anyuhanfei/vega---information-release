@@ -69,4 +69,20 @@ class IdxSettingRepository{
     public function del_cache(string $type){
         Cache::tags("idxset:{$type}")->flush();
     }
+
+    /**
+     * 随机获取指定数量的预设头像
+     *
+     * @param integer $number
+     * @return void
+     */
+    public function random_get_user_avatars_list(int $number = 4){
+        $data = $this->use_type_get_datas("user_avatars")->toArray();
+        $keys = array_rand($data, $number);
+        $res = [];
+        foreach($keys as $key){
+            $res[] = $data[$key];
+        }
+        return $res;
+    }
 }

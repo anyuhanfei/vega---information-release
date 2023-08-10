@@ -99,8 +99,8 @@ class UserLoginService{
                 throwBusinessException('账号或密码错误!');
             }
         }
-        // 云盾登录、短信验证码登录如果会员不存在则直接注册
-        if(in_array($type, ['yidun_oauth', 'phone_smscode'])){
+        // 云盾登录如果会员不存在则直接注册
+        if(in_array($type, ['yidun_oauth'])){
             if(!boolval($user)){
                 $user = $this->register('', $data['phone']);
                 $user->is_login = 1;
@@ -114,10 +114,33 @@ class UserLoginService{
         $data = [
             'uid'=> $user->id,
             'avatar'=> $user->avatar,
+            'nickname'=> $user->nickname,
             'phone'=> $user->phone,
             'token'=> $this->repository->set_token($user->id),
-            'openid'=> $user->openid
+            // 'openid'=> $user->openid,
+            'identity'=> $user->identity,
+            'sex'=> $user->sex,
+            'shop_name'=> $user->detail->shop_name ?? '',
+            'shop_year'=> $user->detail->shop_year ?? '',
+            'shop_business'=> $user->detail->shop_business ?? '',
         ];
         return $data;
+    }
+
+    /**
+     * 忘记密码
+     * 通过手机号获取会员id 并修改密码
+     *
+     * @param string $phone
+     * @param string $password
+     * @return void
+     */
+    public function forget_password(string $phone, string $password){
+        $user = (new \App\Api\Repositories\User\UsersRepository())->use_phone_get_one_data($phone);
+        if(!$user){
+            throwBusinessException("当前手机号未注册");
+        }
+        (new \App\Api\Services\UserService())->update_datas($user->id, ['password'=> $password]);
+        return true;
     }
 }

@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User\Users as Model;
-use App\Models\User\UserFunds;
-use App\Models\User\UserDetail;
+
+use App\Api\Repositories\User\UserFundsRepository;
+use App\Api\Repositories\User\UserDetailRepository;
 
 
 class UsersRepository{
@@ -24,8 +25,8 @@ class UsersRepository{
     public function create_data($field_values){
         $field_values['password'] = $this->set_password($field_values['password']);
         $obj = $this->eloquentClass::create($field_values);
-        UserFunds::create(['id'=> $obj->id]);
-        UserDetail::create(['id'=> $obj->id]);
+        (new UserFundsRepository())->create_data($obj->id);
+        (new UserDetailRepository())->create_data($obj->id);
         return $obj;
     }
 

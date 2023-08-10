@@ -9,15 +9,11 @@ Route::post('test', [\App\Api\Controllers\BaseController::class, 'test']);
 
 // 登录注册
 Route::post('register/phone', [\App\Api\Controllers\LoginController::class, 'phone_register']);
-Route::post('register/account', [\App\Api\Controllers\LoginController::class, 'account_register']);
-Route::post('register/email', [\App\Api\Controllers\LoginController::class, 'email_register']);
 Route::post('login/phone', [\App\Api\Controllers\LoginController::class, 'phone_password_login']);
-Route::post('login/account', [\App\Api\Controllers\LoginController::class, 'account_password_login']);
-Route::post('login/email', [\App\Api\Controllers\LoginController::class, 'email_password_login']);
+Route::post('login/forget', [\App\Api\Controllers\LoginController::class, 'forget_password']);
 
 Route::post('login/phone_smscode', [\App\Api\Controllers\LoginController::class, 'phone_smscode_login']);
 Route::post('login/yidun_oauth', [\App\Api\Controllers\LoginController::class, 'yidun_oauth_login']);
-Route::post('login/third_party', [\App\Api\Controllers\LoginController::class, 'third_party_login']);
 
 // 系统设置
 Route::post('sys/banner', [\App\Api\Controllers\SysController::class, 'banner']);

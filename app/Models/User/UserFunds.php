@@ -11,5 +11,5 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserFunds extends Model{
     public $timestamps = false;
-    protected $fillable = ['id'];
+    protected $fillable = ['id', 'money', 'credit'];
 }

@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'aner admin后台管理系统',
+    'name' => '人品汇后台管理系统',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<img src="/static/logo/aner_admin_favicon.png"> &nbsp; aner admin',
+    'logo' => '<img src="/static/logo/aner_admin_favicon.png"> &nbsp; 人品汇',
 
     /*
     |--------------------------------------------------------------------------
@@ -400,13 +400,14 @@ return [
         // 昵称字段是否使用
         "nickname_show"=> true,
         // 二级密码(支付密码)字段是否使用
-        "laval_password_show"=> true,
+        "laval_password_show"=> false,
         // 推荐人关系字段是否使用
-        "parent_show"=> true,
+        "parent_show"=> false,
         // 会员资产
         // 字段=> 字段注释
         "user_funds"=> [
             'money'=> '余额',
+            'credit'=> "信用分",
         ],
         // 会员资产的操作类型
         // 用于后台的会员资产流水记录条件筛选使用
@@ -462,13 +463,13 @@ return [
         // 公告模块是否使用
         'notice_show'=> true,
         // 图片字段是否展示
-        'image_show'=> true,
+        'image_show'=> false,
         // 项目中公告的类型，可选项有：
         //     单条文字:   一般用于首页轮播图下滚动播出的文字公告的使用场景
         //     多条文字:   一般用于类似消息页面的使用场景
         //     单条富文本: 一般用于首页弹出公告详情页面的使用场景
         //     多条富文本: 一般用于有公告列表，类似文章功能的使用场景
-        'type'=> '多条富文本',
+        'type'=> '单条文字',
     ],
 
     /*

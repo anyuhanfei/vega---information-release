@@ -87,6 +87,52 @@ class IdxSetting extends Model implements Sortable{
                 'create_allowed'=> true,
                 'no_update_ids'=> [],
                 'no_delete_ids'=> [],
+            ],
+            // 会员预设标签
+            'user_tags'=> [
+                'title'=> '会员标签管理',
+                'fields'=> [
+                    ['field'=> 'name', 'field_name'=> '标签名称', 'input_type'=> 'text', 'required'=> true],
+                ],
+                'update_allowed'=> true,
+                'delete_allowed'=> true,
+                'create_allowed'=> true,
+            ],
+            // 预设头像
+            'user_avatars'=> [
+                'title'=> '预设头像管理',
+                'fields'=> [
+                    ['field'=> 'avatar', 'field_name'=> '头像', 'input_type'=> 'image', 'required'=> true],
+                ],
+                'update_allowed'=> false,
+                'delete_allowed'=> true,
+                'create_allowed'=> true,
+            ],
+            // 报名信息
+            'information_of_registration_key'=> [
+                'title'=> '报名信息管理',
+                'fields'=> [
+                    ['field'=> 'key_name', 'field_name'=> '信息标题', 'input_type'=> 'text', 'required'=> true],
+                    ['field'=> 'input_type', 'field_name'=> '内容类型', 'input_type'=> 'select', 'options'=> ['文字'=> '文字:需要填写一段文字', '选项(有或无)'=> '选项:需要选择`有`或`无`', '选项(是或否)'=> '选项:需要选择`是`或`否`'], 'required'=> true],
+                    ['field'=> 'is_show', 'field_name'=> '展示', 'input_type'=> 'switch'],
+                ],
+                'update_allowed'=> true,
+                'delete_allowed'=> true,
+                'create_allowed'=> true,
+            ],
+            // 会员购买 （只有包年、包季、包月）
+            'vip'=> [
+                'title'=> 'VIP管理',
+                'fields'=> [
+                    ['field'=> 'name', 'field_name'=> "名称", 'input_type'=> 'text', 'no_update'=> true, 'required'=> true],
+                    ['field'=> 'price', 'field_name'=> "支付价格", 'input_type'=> 'currency', 'symbol'=> '元', 'required'=> true],
+                    ['field'=> 'old_price', 'field_name'=> "原价", 'input_type'=> 'currency', 'symbol'=> '元', 'required'=> true],
+                    ['field'=> 'discount', 'field_name'=> "折扣比例", 'input_type'=> 'currency', 'symbol'=> '%', 'help'=> "如：设置为 20%，那么用户发布活动时为 20 * (1 - 0.2) = 16元", 'required'=> true],
+                    ['field'=> "time_limit", 'field_name'=> "时限", 'input_type'=> 'number', 'help'=> "单位为 天数", 'required'=> true],
+                ],
+                'update_allowed'=> true,
+                'delete_allowed'=> false,
+                'create_allowed'=> false,
             ]
         ];
     }

@@ -171,13 +171,32 @@ class SysService{
 
     /**
      * 获取指定类型的项目设置
+     * 其中，user_avatars 预设头像不能全部获取，业务需要随机获取4个，所以要特殊处理
      *
      * @param string $type
      * @return array
      */
     public function get_setting_list(string $type):array{
         $IdxSettingRepository = new IdxSettingRepository();
-        $data = $IdxSettingRepository->use_type_get_datas($type);
+        switch($type){
+            case 'user_avatars':
+                $data = $this->get_setting_user_avatars_list();
+                break;
+            default:
+                $data = $IdxSettingRepository->use_type_get_datas($type);
+                break;
+        }
         return ['msg'=> $IdxSettingRepository->get_type_name($type), 'data'=> $data];
+    }
+
+    /**
+     * 随机获取4个预设头像
+     *
+     * @return array
+     */
+    private function get_setting_user_avatars_list():array{
+        $IdxSettingRepository = new IdxSettingRepository();
+        $data = $IdxSettingRepository->random_get_user_avatars_list(4);
+        return $data;
     }
 }

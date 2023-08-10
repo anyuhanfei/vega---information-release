@@ -30,6 +30,10 @@ Route::group([
     $router->resource('log/sysmessage', 'Log\LogSysMessageController');
 
     $router->resource('setting/test', 'Idx\IdxSettingController');
+    $router->resource('setting/user_tags', 'Idx\IdxSettingController');
+    $router->resource('setting/user_avatars', 'Idx\IdxSettingController');
+    $router->resource('setting/information_of_registration_key', 'Idx\IdxSettingController');
+    $router->resource('setting/vip', 'Idx\IdxSettingController');
     $router->get('api/test', 'Idx\IdxSettingController@api_test');
 
 });

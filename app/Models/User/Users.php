@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\BaseFilter;
 
 use App\Models\Log\LogUserFund;
-use App\Models\Log\LogUserOperation;
 
 
 /**
@@ -37,10 +36,6 @@ class Users extends Model{
 
     public function log_fund(){
         return $this->hasMany(LogUserFund::class, 'id', 'uid');
-    }
-
-    public function log_operation(){
-        return $this->hasMany(LogUserOperation::class, 'id', 'uid');
     }
 
 /*------------------------查询----------------------------------------*/

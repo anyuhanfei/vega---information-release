@@ -36,14 +36,23 @@ class UserController extends BaseController{
     protected $parent;
 
     protected function grid(){
-        return Grid::make(new User(), function (Grid $grid) {
+        return Grid::make(new User(['detail']), function (Grid $grid) {
             $grid->model()->orderBy('id', 'desc');
-            $grid->column('id')->sortable();
-            config('admin.users.avatar_show') ? $grid->column('avatar')->image('', 40, 40) : '';
-            config('admin.users.nickname_show') ? $grid->column('nickname') : '';
+            $grid->column('id')->sortable()->width("60px");
+            config('admin.users.avatar_show') ? $grid->column('avatar')->image('', 40, 40)->width('50px') : '';
+            config('admin.users.nickname_show') ? $grid->column('nickname')->width("150px") : '';
             foreach(config('admin.users.user_identity') as $field){
-                $grid->column($field);
+                $grid->column($field)->width("120px");
             }
+            $grid->column('identity', '身份')->width("60px");
+            $grid->column('sex', '性别')->width("60px");
+            $grid->column('age', '年龄')->width("60px");
+            // $grid->column('shop', '商家信息')->width("200px")->display(function(){
+            //     if($this->detail->shop_name != ''){
+            //         return "名称: {$this->detail->shop_name}<br/>年份: {$this->detail->shop_year}<br/>业务: {$this->detail->shop_business}";
+            //     }
+            // });
+            $grid->column('bio', '个人简介')->width("200px");
             $sys_user = config('admin.users');
             if(count($sys_user['user_funds']) > 0){
                 $grid->colum('资金')->display(function() use($sys_user){
@@ -54,19 +63,19 @@ class UserController extends BaseController{
                     return $str;
                 });
             }
-            if($sys_user['parent_show']){
-                $grid->column('parent.phone', '上级标识')->display(function() use($sys_user){
-                    if($this->parent_id == 0){
-                        return "";
-                    }
-                    $identity = $sys_user['user_identity'][0];
-                    try{
-                        return $this->parent->$identity;
-                    }catch(\Throwable $th){
-                        return "账号已注销";
-                    }
-                });
-            }
+            // if($sys_user['parent_show']){
+            //     $grid->column('parent.phone', '上级标识')->display(function() use($sys_user){
+            //         if($this->parent_id == 0){
+            //             return "";
+            //         }
+            //         $identity = $sys_user['user_identity'][0];
+            //         try{
+            //             return $this->parent->$identity;
+            //         }catch(\Throwable $th){
+            //             return "账号已注销";
+            //         }
+            //     });
+            // }
             $grid->column('is_login')->switch()->help('如果关闭则此会员无法登录');
             $grid->column('created_at');
             $grid->filter(function (Grid\Filter $filter) use($sys_user){
@@ -147,13 +156,19 @@ class UserController extends BaseController{
      * @return Form
      */
     protected function form(){
-        return Form::make(User::with('funds'), function (Form $form) {
+        return Form::make(User::with(['funds', 'detail']), function (Form $form) {
             if($form->isCreating()){
                 config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload()->uniqueName()->saveFullUrl()->required()->removable(false)->retainable() : '';
                 foreach(config('admin.users.user_identity') as $field){
                     $form->text($field)->required();
                 }
                 config('admin.users.nickname_show') ? $form->text('nickname')->required() : '';
+                $form->select("sex", '性别')->options(['男'=> "男", '女'=> '女']);
+                $form->select("identity", "身份")->options(['个人'=> "个人", '商家'=> "商家"])->when('=', '商家', function(Form $form){
+                    $form->text("detail.shop_name", '商家名称');
+                    $form->text("detail.shop_year", '商家年份');
+                    $form->text("detail.shop_business", '商家业务');
+                });
                 $form->text('password')->required();
                 if(config('admin.users.level_password_show')){
                     $form->text('level_password')->required();
@@ -171,8 +186,8 @@ class UserController extends BaseController{
                 $form->saved(function (Form $form, $result) {
                     $user_funds_repository = new \App\Api\Repositories\User\UserFundsRepository();
                     $user_funds_repository->create_data($result);
-                    $user_detail_repository = new \App\Api\Repositories\User\UserDetailRepository();
-                    $user_detail_repository->create_data($result);
+                    // $user_detail_repository = new \App\Api\Repositories\User\UserDetailRepository();
+                    // $user_detail_repository->create_data($result);
                 });
             }else{
                 $form->tab('基本信息', function(Form $form){

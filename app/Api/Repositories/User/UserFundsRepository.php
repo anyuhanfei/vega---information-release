@@ -3,6 +3,7 @@ namespace App\Api\Repositories\User;
 
 use App\Models\User\UserFunds as Model;
 use App\Api\Repositories\Log\LogUserFundRepository;
+use App\Api\Repositories\Sys\SysSettingRepository;
 
 class UserFundsRepository{
     protected $eloquentClass = Model::class;
@@ -14,8 +15,12 @@ class UserFundsRepository{
      * @return void
      */
     public function create_data(int $user_id){
+        // 需要获取到设置的信用分
+        $初始信用分 = (new SysSettingRepository())->use_id_get_value(32);
         return $this->eloquentClass::create([
-            'id'=> $user_id
+            'id'=> $user_id,
+            'money'=> 0,
+            'credit'=> intval($初始信用分),
         ]);
     }
 

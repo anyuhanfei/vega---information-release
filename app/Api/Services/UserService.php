@@ -24,21 +24,35 @@ class UserService{
      * 获取会员详情
      *
      * @param int $user_id 会员id
+     * @param int $other_id 他人id
      * @return json
      */
-    public function get_user_detail(int $user_id){
-        $data = (new UsersRepository())->get_user_detail($user_id);
+    public function get_user_detail(int $user_id, int $other_id = 0){
+        if($other_id == 0 || $other_id == $user_id){
+            $is_me = true;
+            $user = (new UsersRepository())->get_user_detail($user_id);
+        }else{
+            $is_me = false;
+            $user = (new UsersRepository())->get_user_detail($other_id);
+        }
         return [
-            'id'=> $data->id,
-            'phone'=> $data->phone,
-            'avatar'=> $data->avatar,
-            'nickname'=> $data->nickname,
-            'detail'=> [
-                'id_card_username'=> $data->detail->id_card_username,
-            ],
+            'id'=> $user->id,
+            'phone'=> $user->phone,
+            'avatar'=> $user->avatar,
+            'nickname'=> $user->nickname,
+            'sex'=> $user->sex,
+            'identity'=> $user->identity,
+            'bio'=> $user->bio,
+            'age'=> $user->age,
+            'shop_name'=> $user->detail->shop_name ?? '',
+            'shop_year'=> $user->detail->shop_year ?? '',
+            'shop_business'=> $user->detail->shop_business ?? '',
+            'background'=> $user->detail->background,
+            'background_type'=> $user->detail->background_type,
             'funds'=> [
-                'money'=> $data->funds->money,
-            ]
+                'money'=> $is_me ? $user->funds->money : 0,
+                'credit'=> $user->funds->credit,
+            ],
         ];
     }
 
@@ -83,20 +97,5 @@ class UserService{
             throwBusinessException($e->getMessage());
         }
         return true;
-    }
-
-    /**
-     * 获取微信绑定的手机号并保存手机号
-     *
-     * @param integer $user_id
-     * @param string $iv
-     * @param string $encryptedData
-     * @return void
-     */
-    public function bind_wx_phone(int $user_id, string $iv, string $encryptedData){
-        $user_data = (new UsersRepository())->get_user_detail($user_id);
-        $phone = (new \App\Api\Tools\Wx\WxminiLoginTool())->get_wx_phone($user_data->openid, $iv, $encryptedData);
-        $res = $this->update_datas($user_id, ['phone'=> $phone]);
-        return $phone;
     }
 }

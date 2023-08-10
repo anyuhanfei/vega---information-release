@@ -14,7 +14,7 @@ class PhoneRegisterRequest extends BaseRequest{
         return [
             'phone'=> ['required', new \App\Api\Rules\PhoneVerify, new \App\Api\Rules\PhoneExistVerify],
             'sms_code'=> ['required', new \App\Api\Rules\SmsCodeVerify],
-            'password'=> ['required', Password::min(8), 'confirmed:password_confirmation'],
+            'password'=> ['required', Password::min(6), 'confirmed:password_confirmation'],
             'password_confirmation' => ['required']
         ];
     }
