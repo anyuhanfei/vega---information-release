@@ -36,4 +36,7 @@ Route::group([
     $router->resource('setting/vip', 'Idx\IdxSettingController');
     $router->get('api/test', 'Idx\IdxSettingController@api_test');
 
+    $router->resource('event/category', 'Event\EventCategoryController');
+    $router->get('api/category', 'Event\EventCategoryController@api_category');
+
 });

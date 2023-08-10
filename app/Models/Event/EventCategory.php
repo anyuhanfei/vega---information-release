@@ -6,13 +6,11 @@ use Dcat\Admin\Traits\HasDateTimeFormatter;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Dcat\Admin\Traits\ModelTree;
-use Exception;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
+
 
 /**
- * 广告表
+ * 活动分类表
  */
 class EventCategory extends Model{
 	use HasDateTimeFormatter;
@@ -34,7 +32,7 @@ class EventCategory extends Model{
      * @return void
      */
     public function parent(){
-        return $this->hasOne(SysAd::class, 'id', 'parent_id');
+        return $this->hasOne(EventCategory::class, 'id', 'parent_id');
     }
 
     /**
@@ -43,6 +41,14 @@ class EventCategory extends Model{
      * @return void
      */
     public function children(){
-        return $this->hasMany(SysAd::class, 'parent_id', 'id');
+        return $this->hasMany(EventCategory::class, 'parent_id', 'id');
+    }
+
+    public function scopeId(Builder $builder, int $value){
+        return $builder->where("id", $value);
+    }
+
+    public function scopeParentId(Builder $builder, int $value){
+        return $builder->where("parent_id", $value);
     }
 }

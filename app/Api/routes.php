@@ -48,7 +48,10 @@ Route::group([
     // 会员密码
     $router->post('user/update_password', [\App\Api\Controllers\UserController::class, 'update_password']);
     $router->post('user/forget_password', [\App\Api\Controllers\UserController::class, 'forget_password']);
-    $router->post('user/update_level_password', [\App\Api\Controllers\UserController::class, 'update_level_password']);
-    $router->post('user/forget_level_password', [\App\Api\Controllers\UserController::class, 'forget_level_password']);
+
+    // 活动
+    $router->post('event/category', [\App\Api\Controllers\EventController::class, 'event_category']);
+    $router->post('event/create', [\App\Api\Controllers\EventController::class, 'event_create']);
+    
 });
 
