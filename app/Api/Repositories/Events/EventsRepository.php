@@ -2,6 +2,7 @@
 namespace App\Api\Repositories\Events;
 
 use App\Models\Event\Events as Model;
+use Illuminate\Support\Facades\Redis;
 
 class EventsRepository{
     protected $eloquentClass = Model::class;
@@ -28,5 +29,35 @@ class EventsRepository{
             'information_of_registration_key' => $information_of_registration_key,
             'status'=> 0
         ]);
+    }
+
+    public function add_geo(int $event_id, float|string $longitude, float|string $latitude){
+        Redis::geoadd("event_geo", $longitude, $latitude, $event_id);
+    }
+
+    /**
+     * 获取附近的活动
+     *
+     * @param float|string $longitude
+     * @param float|string $latitude
+     * @return void
+     */
+    public function get_nearby_event_ids(float|string $longitude, float|string $latitude){
+        return Redis::georadius("event_geo", $longitude, $latitude, 100, 'km', ['ASC', 'withdist']);
+    }
+
+    /**
+     * 获取最新的活动id
+     *
+     * @param integer $page
+     * @param integer $limit
+     * @return void
+     */
+    public function get_new_event_ids(int $page, int $limit){
+        return $this->eloquentClass::page($page, $limit)->orderBy('id', 'desc')->pluck('id')->toArray();
+    }
+
+    public function use_search_get_list(array $where){
+        return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status'])->get();
     }
 }

@@ -55,4 +55,23 @@ class EventController extends BaseController{
         $res = $this->service->create_event_operation($this->user_id, $params);
         return success("创建活动成功");
     }
+
+    /**
+     * 获取活动列表
+     *
+     * @param \App\Api\Requests\PageRequest $request
+     * @return void
+     */
+    public function event_list(\App\Api\Requests\PageRequest $request){
+        $page = $request->input("page");
+        $limit = $request->input("limit");
+        $search['title'] = $request->input("title", '') ?? '';
+        $search['sex'] = $request->input("sex", '') ?? '';
+        $search['longitude'] = $request->input("longitude", 0) ?? 0;
+        $search['latitude'] = $request->input("latitude", 0) ?? 0;
+        $search['date'] = $request->input("date", '') ?? '';
+        $search['category_id'] = $request->input("category_id", '') ?? '';
+        $list = $this->service->get_event_list($this->user_id, $page, $limit, $search);
+        return success("活动列表", $list);
+    }
 }

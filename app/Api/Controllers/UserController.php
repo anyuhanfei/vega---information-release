@@ -56,27 +56,15 @@ class UserController extends BaseController{
     }
 
     /**
-     * 标签设置
+     * 设置会员的经纬度信息
      *
-     * @param \App\Api\Requests\User\UserTagsSetRequest $request
+     * @param \App\Api\Requests\CoordinateRequest $request
      * @return void
      */
-    public function tag_set(\App\Api\Requests\User\UserTagsSetRequest $request){
-        $type = $request->input("type");
-        $tag = $request->input("tag");
-        $res = (new UserService())->set_tags_operation($this->user_id, $type, $tag);
+    public function set_coordinate(\App\Api\Requests\CoordinateRequest $request){
+        $longitude = $request->input('longitude');
+        $latitude = $request->input('latitude');
+        (new UserService())->set_user_coordinate($this->user_id, $longitude, $latitude);
         return success("设置成功");
-    }
-
-    /**
-     * 点赞操作
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function tag_like(Request $request){
-        $tag_id = $request->input("tag_id");
-        $data = (new UserService())->tag_like_operation($this->user_id, $tag_id);
-        return success("点赞成功", $data);
     }
 }

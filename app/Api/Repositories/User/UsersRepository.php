@@ -278,7 +278,6 @@ class UsersRepository{
             // 未关注，点击关注
             Redis::sadd("at:{$user_id}", $other_id);
             Redis::sadd("byat:{$other_id}", $user_id);
-            
             return ['status'=> true];
         }
     }
@@ -305,5 +304,36 @@ class UsersRepository{
                 $user->bio = "TA还很懒，没有留下什么...";
             }
         }
+    }
+
+    /**
+     * 获取会员设置的经纬度信息
+     *
+     * @param integer $user_id
+     * @return array
+     */
+    public function get_user_coordinate(int $user_id):array{
+        $data = Redis::get("ulong&lat:{$user_id}") ?? '';
+        if($data == ''){
+            return ['longitude'=> 0, 'latitude'=> 0];
+        }
+        try{
+            $data = comma_str_to_array($data);
+            return ['longitude'=> floatval($data[0]), 'latitude'=> floatval($data[1])];
+        }catch(\Throwable $th){
+            return ['longitude'=> 0, 'latitude'=> 0];
+        }
+    }
+
+    /**
+     * 设置会员的经纬度信息
+     *
+     * @param integer $user_id
+     * @param string|float $longitude
+     * @param string|float $latitude
+     * @return void
+     */
+    public function set_user_coordinate(int $user_id, string|float $longitude, string|float $latitude){
+        return Redis::set("ulong&lat:{$user_id}", $longitude . "," . $latitude);
     }
 }

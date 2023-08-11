@@ -37,6 +37,7 @@ Route::group([
     $router->get('api/test', 'Idx\IdxSettingController@api_test');
 
     $router->resource('event/category', 'Event\EventCategoryController');
+    $router->resource('event/events', 'Event\EventsController');
     $router->get('api/category', 'Event\EventCategoryController@api_category');
 
 });

@@ -109,27 +109,15 @@ class UserService{
     }
 
     /**
-     * 设置会员的标签
+     * 设置会员经纬度
      *
      * @param integer $user_id
-     * @param string $type
-     * @param string $tag
+     * @param string|float $longitude
+     * @param string|float $latitude
      * @return void
      */
-    public function set_tags_operation(int $user_id, string $type, string $tag){
-        (new UserTagsRepository())->create_data($user_id, $type, $tag);
+    public function set_user_coordinate(int $user_id, string|float $longitude, string|float $latitude){
+        (new UsersRepository())->set_user_coordinate($user_id, $longitude, $latitude);
         return true;
-    }
-
-    /**
-     * 点赞、取消点赞操作
-     *
-     * @param [type] $user_id
-     * @param [type] $tag_id
-     * @return array
-     */
-    public function tag_like_operation(int $user_id, int $tag_id):array{
-        $res_data = (new UserTagsRepository())->set_like_status($user_id, $tag_id);
-        return $res_data;
     }
 }

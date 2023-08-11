@@ -155,7 +155,6 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection background_type
      * @property Grid\Column|Collection credit
      * @property Grid\Column|Collection tag
-     * @property Grid\Column|Collection like
      * @property Grid\Column|Collection account
      * @property Grid\Column|Collection phone
      * @property Grid\Column|Collection nickname
@@ -314,7 +313,6 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection background_type(string $label = null)
      * @method Grid\Column|Collection credit(string $label = null)
      * @method Grid\Column|Collection tag(string $label = null)
-     * @method Grid\Column|Collection like(string $label = null)
      * @method Grid\Column|Collection account(string $label = null)
      * @method Grid\Column|Collection phone(string $label = null)
      * @method Grid\Column|Collection nickname(string $label = null)
@@ -478,7 +476,6 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection background_type
      * @property Show\Field|Collection credit
      * @property Show\Field|Collection tag
-     * @property Show\Field|Collection like
      * @property Show\Field|Collection account
      * @property Show\Field|Collection phone
      * @property Show\Field|Collection nickname
@@ -637,7 +634,6 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection background_type(string $label = null)
      * @method Show\Field|Collection credit(string $label = null)
      * @method Show\Field|Collection tag(string $label = null)
-     * @method Show\Field|Collection like(string $label = null)
      * @method Show\Field|Collection account(string $label = null)
      * @method Show\Field|Collection phone(string $label = null)
      * @method Show\Field|Collection nickname(string $label = null)

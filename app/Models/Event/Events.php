@@ -56,7 +56,7 @@ class Events extends Model{
         return ['0'=> '未支付', '10'=> '未审核', '19'=> '已驳回', '20'=> '报名中', '30'=> '进行中', '40'=> '已完成'];
     }
 
-    protected function status_text(): Attribute{
+    protected function statusText(): Attribute{
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $this->status_array()[$attributes['status']],
         );
@@ -69,20 +69,23 @@ class Events extends Model{
      * @return void
      */
     public function user(){
-        return $this->hasOne(\App\Models\User\Users::class, "user_id", 'id');
+        return $this->hasOne(\App\Models\User\Users::class, "id", 'user_id');
     }
 
     public function one_level_category(){
-        return $this->hasOne(\App\Models\Event\EventCategory::class, "one_level_category_id", 'id')->withTrashed();
+        return $this->hasOne(\App\Models\Event\EventCategory::class, "id", 'one_level_category_id')->withTrashed();
     }
 
     public function two_level_category(){
-        return $this->hasOne(\App\Models\Event\EventCategory::class, "two_level_category_id", 'id')->withTrashed();
+        return $this->hasOne(\App\Models\Event\EventCategory::class, "id", 'two_level_category_id')->withTrashed();
     }
 
 /*------------------------查询----------------------------------------*/
-    public function scopeId(Builder $builder, int $value){
-        return $builder->where("id", $value);
+    public function scopeId(Builder $builder, int|array $value){
+        if(is_int($value)){
+            $value = [$value];
+        }
+        return $builder->whereIn("id", $value);
     }
 
     public function scopeUserId(Builder $builder, int $value){
@@ -93,8 +96,13 @@ class Events extends Model{
         return $builder->where("title", 'like', '%'.$value.'%');
     }
 
-    public function scopeSexLimit(Builder $builder, int $value){
-        return $builder->where("sex_limit", $value);
+    public function scopeSexLimit(Builder $builder, string $value){
+        if($value == '女' || $value == '男'){
+            $value = [$value, '全部'];
+        }else{
+            $value = [$value];
+        }
+        return $builder->whereIn("sex_limit", $value);
     }
 
     public function scopeChargeType(Builder $builder, int $value){

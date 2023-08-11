@@ -67,7 +67,7 @@ class UserSocialController extends BaseController{
         return success("关注列表", $data);
     }
 
-    public function fans_list(Request $request){
+    public function fans_list(\App\Api\Requests\PageRequest $request){
         $other_id = $request->input("other_id" ?? 0) ?? 0;
         $page = $request->input('page', 1);
         $limit = $request->input('limit', 10);

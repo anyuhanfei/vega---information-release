@@ -72,10 +72,10 @@ class LogSysMessageRepository{
      */
     public function send_message(string $title, string $user_ids = '0', string $image = '', string $message = ''){
         $data = $this->eloquentClass::create([
-            'uid'=> $user_ids,
+            'user_ids'=> $user_ids,
             'title'=> $title,
             'image'=> $image,
-            'message'=> $message
+            'content'=> $message
         ]);
         (new AdminLogSysMessage())->save_uid_to_redis($data->id, $user_ids);
         (new AdminLogSysMessage())->save_data_to_redis($data->id, $title, $image, $message);

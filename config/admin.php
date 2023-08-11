@@ -483,7 +483,7 @@ return [
         // 图片字段是否展示
         'image_show'=> false,
         // 详情(富文本)字段是否展示
-        'content_show'=> false,
+        'content_show'=> true,
         // 列表已读，如果设置为true，则获取系统消息列表后就将列表中的消息设置为已读
         // 如果设置为false，则在获取系统消息详情时将此消息设置为已读
         'list_read'=> true,
