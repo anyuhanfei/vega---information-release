@@ -30,8 +30,21 @@ class PayController extends BaseController{
     public function recharge(Request $request){
         $amount = $request->input('amount', 0) ?? 0;
         $pay_method = $request->input('pay_method', '') ?? '';
-        $data = $this->service->recharge_pay($this->uid, $amount, $pay_method);
+        $data = $this->service->recharge_pay($this->user_id, $amount, $pay_method);
         return success("充值支付调用", $data);
+    }
+
+    /**
+     * 开通vip支付申请
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function vip(Request $request){
+        $vip_name = $request->input('vip_name', '') ?? '';
+        $pay_method = $request->input('pay_method', '') ?? '';
+        $data = $this->service->buy_vip($this->user_id, $vip_name, $pay_method);
+        return success("开通vip", $data);
     }
 
     /**

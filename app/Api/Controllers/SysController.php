@@ -48,7 +48,7 @@ class SysController extends BaseController{
      */
     public function notice(Request $request){
         $id = $request->input('id', 0) ?? 0;
-        return success('公告', $this->service->get_notice($this->uid, $id));
+        return success('公告', $this->service->get_notice($this->user_id, $id));
     }
 
 

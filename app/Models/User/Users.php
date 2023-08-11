@@ -39,8 +39,11 @@ class Users extends Model{
     }
 
 /*------------------------查询----------------------------------------*/
-    public function scopeId(Builder $builder, int $value){
-        return $builder->where("id", $value);
+    public function scopeId(Builder $builder, int|array $value){
+        if(is_int($value)){
+            $value = [$value];
+        }
+        return $builder->whereIn("id", $value);
     }
 
     public function scopeNickname(Builder $builder, string $value){

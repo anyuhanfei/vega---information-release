@@ -49,6 +49,16 @@ Route::group([
     $router->post('user/update_password', [\App\Api\Controllers\UserController::class, 'update_password']);
     $router->post('user/forget_password', [\App\Api\Controllers\UserController::class, 'forget_password']);
 
+    // 会员社交
+    $router->post('user/set/tag', [\App\Api\Controllers\UserSocialController::class, 'tag_set']);
+    $router->post('user/tag/like', [\App\Api\Controllers\UserSocialController::class, 'tag_like']);
+    $router->post('user/attention/list', [\App\Api\Controllers\UserSocialController::class, 'attention_list']);
+    $router->post('user/attention', [\App\Api\Controllers\UserSocialController::class, 'attention']);
+    $router->post('user/fans/list', [\App\Api\Controllers\UserSocialController::class, 'fans_list']);
+
+    // 会员其他
+    $router->post('user/vip/pay', [\App\Api\Controllers\PayController::class, 'vip']);
+
     // 活动
     $router->post('event/category', [\App\Api\Controllers\EventController::class, 'event_category']);
     $router->post('event/create', [\App\Api\Controllers\EventController::class, 'event_create']);

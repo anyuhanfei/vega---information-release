@@ -55,4 +55,28 @@ class UserController extends BaseController{
         return $res ? success('密码修改成功') : error('密码修改失败');
     }
 
+    /**
+     * 标签设置
+     *
+     * @param \App\Api\Requests\User\UserTagsSetRequest $request
+     * @return void
+     */
+    public function tag_set(\App\Api\Requests\User\UserTagsSetRequest $request){
+        $type = $request->input("type");
+        $tag = $request->input("tag");
+        $res = (new UserService())->set_tags_operation($this->user_id, $type, $tag);
+        return success("设置成功");
+    }
+
+    /**
+     * 点赞操作
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function tag_like(Request $request){
+        $tag_id = $request->input("tag_id");
+        $data = (new UserService())->tag_like_operation($this->user_id, $tag_id);
+        return success("点赞成功", $data);
+    }
 }

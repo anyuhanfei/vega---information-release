@@ -231,4 +231,79 @@ class UsersRepository{
     public function get_session_key(string $openid):string{
         return Redis::get($openid);
     }
+
+    /**
+     * 获取会员是否关注了另一个会员
+     *
+     * @param integer $user_id
+     * @param integer $other_id
+     * @return boolean
+     */
+    public function get_attention_status(int $user_id, int $other_id):bool{
+        return boolval(Redis::sismember("at:{$user_id}", $other_id));
+    }
+
+    public function get_attention_list(int $user_id){
+        return Redis::smembers("at:{$user_id}");
+    }
+
+    public function get_fans_list(int $user_id){
+        return Redis::smembers("byat:{$user_id}");
+    }
+
+    public function get_attention_count(int $user_id):int{
+        return Redis::scard("at:{$user_id}") ?? 0;
+    }
+
+    public function get_face_count(int $user_id):int{
+        return Redis::scard("byat:{$user_id}") ?? 0;
+    }
+
+    /**
+     * 关注、取消关注操作
+     *
+     * @param integer $user_id
+     * @param integer $other_id
+     * @return void
+     */
+    public function set_attention(int $user_id, int $other_id):array{
+        // 判断是否已关注
+        $status = $this->get_attention_status($user_id, $other_id);
+        if($status){
+            // 已关注，点击取消关注
+            Redis::srem("at:{$user_id}", $other_id);
+            Redis::srem("byat:{$other_id}", $user_id);
+            return ['status'=> false];
+        }else{
+            // 未关注，点击关注
+            Redis::sadd("at:{$user_id}", $other_id);
+            Redis::sadd("byat:{$other_id}", $user_id);
+            
+            return ['status'=> true];
+        }
+    }
+
+    /**
+     * 获取一批会员的基本信息，用于展示粉丝、关注等会员列表
+     *
+     * @param integer $user_ids
+     * @return void
+     */
+    public function get_users_basic_data(array $user_ids){
+        return $this->eloquentClass::id($user_ids)->select(['id', 'avatar', 'nickname', 'age', 'bio'])->get();
+    }
+
+    /**
+     * 整理会员格言
+     *
+     * @param [type] $users
+     * @return void
+     */
+    public function settle_users_bio(&$users){
+        foreach($users as &$user){
+            if($user->bio == ''){
+                $user->bio = "TA还很懒，没有留下什么...";
+            }
+        }
+    }
 }

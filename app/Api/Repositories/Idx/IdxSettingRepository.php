@@ -85,4 +85,26 @@ class IdxSettingRepository{
         }
         return $res;
     }
+
+    /**
+     * 通过标签名获取一条数据
+     * 用于检测指定的标签是否存在
+     *
+     * @param string $tag
+     * @param string $type
+     * @return void
+     */
+    public function use_tag_get_one_data(string $tag){
+        return $this->eloquentClass::type('user_tags')->where("value0", $tag)->first();
+    }
+
+    /**
+     * 通过vip名称获取一条数据
+     *
+     * @param string $vip_name
+     * @return void
+     */
+    public function use_vipname_get_one_data(string $vip_name){
+        return $this->eloquentClass::type('vip')->where("value0", $vip_name)->first();
+    }
 }

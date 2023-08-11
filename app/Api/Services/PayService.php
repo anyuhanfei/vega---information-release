@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 use App\Api\Repositories\Log\LogUserPayRepository;
+use App\Api\Repositories\Idx\IdxSettingRepository;
 
 use App\Api\Tools\Aliyun\AliyunPayTool;
 use App\Api\Tools\Wx\WxPayTool;
@@ -23,6 +24,22 @@ class PayService{
      */
     public function recharge_pay(int $user_id, int|float|string $amount, string $pay_method){
         return $this->pay($pay_method, $user_id, $amount, '', '充值', '充值' . $amount);
+    }
+
+    /**
+     * 购买vip，直接调用支付，成功后再添加vip记录
+     *
+     * @param integer $user_id
+     * @param string $vip_name
+     * @param string $pay_method
+     * @return void
+     */
+    public function buy_vip(int $user_id, string $vip_name, string $pay_method){
+        $vip = (new IdxSettingRepository())->use_vipname_get_one_data($vip_name);
+        if(!$vip){
+            throwBusinessException("选择的vip模式不存在");
+        }
+        return $this->pay($pay_method, $user_id, $vip->price, '', '开通vip', '开通vip' . $vip->name);
     }
 
 

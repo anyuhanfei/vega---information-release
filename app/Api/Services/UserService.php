@@ -2,12 +2,13 @@
 namespace App\Api\Services;
 
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 
 use App\Api\Repositories\User\UsersRepository;
 use App\Api\Repositories\User\UserDetailRepository;
-use Illuminate\Support\Facades\DB;
+use App\Api\Repositories\User\UserTagsRepository;
 
 class UserService{
     /**
@@ -35,6 +36,13 @@ class UserService{
             $is_me = false;
             $user = (new UsersRepository())->get_user_detail($other_id);
         }
+        // 标签信息
+        $UserTagsRepository = new UserTagsRepository();
+        $tags = $UserTagsRepository->get_user_all_tags($user->id);
+        foreach($tags as &$tag){
+            $tag->status = $UserTagsRepository->get_like_status($user_id, $tag->id);
+            $tag->like = $UserTagsRepository->get_like_number($tag->id);
+        }
         return [
             'id'=> $user->id,
             'phone'=> $user->phone,
@@ -49,6 +57,7 @@ class UserService{
             'shop_business'=> $user->detail->shop_business ?? '',
             'background'=> $user->detail->background,
             'background_type'=> $user->detail->background_type,
+            'tags'=> $tags,
             'funds'=> [
                 'money'=> $is_me ? $user->funds->money : 0,
                 'credit'=> $user->funds->credit,
@@ -97,5 +106,30 @@ class UserService{
             throwBusinessException($e->getMessage());
         }
         return true;
+    }
+
+    /**
+     * 设置会员的标签
+     *
+     * @param integer $user_id
+     * @param string $type
+     * @param string $tag
+     * @return void
+     */
+    public function set_tags_operation(int $user_id, string $type, string $tag){
+        (new UserTagsRepository())->create_data($user_id, $type, $tag);
+        return true;
+    }
+
+    /**
+     * 点赞、取消点赞操作
+     *
+     * @param [type] $user_id
+     * @param [type] $tag_id
+     * @return array
+     */
+    public function tag_like_operation(int $user_id, int $tag_id):array{
+        $res_data = (new UserTagsRepository())->set_like_status($user_id, $tag_id);
+        return $res_data;
     }
 }
