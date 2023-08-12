@@ -3,6 +3,7 @@ namespace App\Api\Services;
 
 use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\Events\EventCategoryRepository;
+use App\Api\Repositories\Sys\SysSettingRepository;
 use App\Api\Repositories\User\UsersRepository;
 
 class EventService{
@@ -93,13 +94,7 @@ class EventService{
             foreach($list as $v){
                 if($v->id == $id){
                     $v->distance = $withdist[$id];
-                    if(date("Y-m-d", strtotime($v->start_time)) == date("Y-m-d", strtotime($v->end_time))){
-                        // 一日活动
-                        $v->time = date("H:i", strtotime($v->start_time)) . '-' . date("H:i", strtotime($v->end_time)) . ' ' . date("m.d", strtotime($v->start_time));
-                    }else{
-                        // 非一日活动
-                        $v->time = date("m.d H:i", strtotime($v->start_time)) . '-' . date("m.d H:i", strtotime($v->end_time));
-                    }
+                    $v->time = (new EventsRepository())->整理时间数据($v->start_time, $v->end_time);
                     $v->user_avatar = $v->user->avatar;
                     $v->user_nickname = $v->user->nickname;
                     unset($v->start_time, $v->end_time, $v->user);
@@ -109,4 +104,52 @@ class EventService{
         }
         return $data;
     }
+
+    public function get_event_detail(int $user_id, int $event_id){
+        $event = (new EventsRepository())->use_id_get_one_data($event_id);
+        if(!$event || $event->status < 20){
+            throwBusinessException("活动不存在或已下架");
+        }
+        $coordinate = (new UsersRepository())->get_user_coordinate($user_id);
+        $user = (new UsersRepository())->use_id_get_one_data($user_id);
+        // 是否可报名
+        $is_apply = $event->sex_limit == '全部' ? true : ($event->sex_limit == $user->sex ? true : false);
+        // 是否收费
+        switch($event->charge_type){
+            case '收费':
+                $price = (new SysSettingRepository())->use_id_get_value(29);
+                break;
+            case '男收费':
+                $price = (new SysSettingRepository())->use_id_get_value(30);
+                break;
+            case '女收费':
+                $price = (new SysSettingRepository())->use_id_get_value(31);
+                break;
+            default:
+                $price = 0;
+                break;
+        }
+        return [
+            'id'=> $event->id,
+            'publisher_id'=> $event->user_id,
+            'publisher_avatar'=> $event->user->avatar,
+            'publisher_nickname'=> $event->user->nickname,
+            'image'=> $event->image,
+            'video'=> $event->video,
+            'title'=> $event->title,
+            'time'=> (new EventsRepository())->整理时间数据($event->start_time, $event->end_time),
+            'distance'=> get_distance($coordinate['longitude'], $coordinate['latitude'], $event->site_longitude, $event->site_latitude),
+            'site_address'=> $event->site_address,
+            'service_phone'=> $event->service_phone,
+            'award_content'=> $event->award_content,
+            'require_content'=> $event->require_content,
+            'sex_limit'=> $event->sex_limit,
+            'event_type'=> $event->event_type,
+            'charge_type'=> $event->charge_type,
+            'status'=> $event->status,
+            'is_apply'=> $is_apply,
+            'price'=> $price,
+        ];
+    }
+
 }

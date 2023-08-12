@@ -17,6 +17,7 @@ class EventQa extends Model{
     use SoftDeletes;
     use BaseFilter;
 
+    protected $table = 'event_qa';
     protected $guarded = [];
 
     /*------------------------关联----------------------------------------*/
@@ -26,7 +27,7 @@ class EventQa extends Model{
      * @return void
      */
     public function user(){
-        return $this->hasOne(\App\Models\User\Users::class, "user_id", 'id');
+        return $this->hasOne(\App\Models\User\Users::class, "id", 'user_id');
     }
 
     /**
@@ -35,7 +36,7 @@ class EventQa extends Model{
      * @return void
      */
     public function event(){
-        return $this->hasOne(\App\Models\Event\Events::class, "event_id", 'id');
+        return $this->hasOne(\App\Models\Event\Events::class, "id", 'event_id');
     }
 
     /**
@@ -44,7 +45,7 @@ class EventQa extends Model{
      * @return void
      */
     public function publisher(){
-        return $this->hasOne(\App\Models\User\Users::class, 'publisher_id', 'id');
+        return $this->hasOne(\App\Models\User\Users::class, 'id', 'publisher_id');
     }
 
     /**
@@ -53,11 +54,24 @@ class EventQa extends Model{
      * @return void
      */
     public function question(){
-        return $this->hasOne(\App\Models\Event\EventQa::class, 'question_id', 'id');
+        return $this->hasOne(\App\Models\Event\EventQa::class, 'id', 'question_id');
+    }
+
+    /**
+     * 回答
+     *
+     * @return void
+     */
+    public function answer(){
+        return $this->hasMany(\App\Models\Event\EventQa::class, 'question_id', 'id');
     }
 
 
 /*------------------------查询----------------------------------------*/
+    public function scopeId(Builder $builder, int $value){
+        return $builder->where("id", $value);
+    }
+
     public function scopeUserId(Builder $builder, int $value){
         return $builder->where("user_id", $value);
     }
@@ -68,5 +82,9 @@ class EventQa extends Model{
 
     public function scopePublisherId(Builder $builder, int $value){
         return $builder->where("publisher_id", $value);
+    }
+
+    public function scopeQuestionId(Builder $builder, int $value){
+        return $builder->where("question_id", $value);
     }
 }

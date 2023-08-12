@@ -1,8 +1,10 @@
 <?php
 namespace App\Api\Services;
 
+use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\User\UsersRepository;
 use App\Api\Repositories\User\UserTagsRepository;
+use App\Api\Repositories\Events\EventQaRepository;
 
 
 class UserSocialService{
@@ -96,5 +98,79 @@ class UserSocialService{
         }
         (new UsersRepository())->settle_users_bio($users);
         return $users;
+    }
+
+    /**
+     * 添加疑问/回答问题
+     *
+     * @param integer $user_id
+     * @param integer $event_id
+     * @param string $content
+     * @param integer $question_id
+     * @return void
+     */
+    public function add_qa_operation(int $user_id, int $event_id, string $content, int $question_id = 0){
+        $event = (new EventsRepository())->use_id_get_one_data($event_id);
+        (new EventQaRepository())->create_data($user_id, $event_id, $event->user_id, $question_id, $content);
+        return true;
+    }
+
+    /**
+     * 获取问答列表
+     *
+     * @param integer $user_id
+     * @param integer $event_id
+     * @return void
+     */
+    public function get_qa_list(int $user_id, int $event_id){
+        $data = (new EventQaRepository())->use_eventid_get_questions($event_id);
+        $res = [];
+        foreach($data as $v){
+            $temp = [
+                'question_id'=> $v->id,
+                'user_id'=> $v->user_id,
+                'content'=> $v->content,
+                'answer'=> [],
+                'answer_number'=> 0,
+                'answer_user_avatars'=> [],
+            ];
+            foreach($v->answer as $a){
+                $temp['answer'][] = [
+                    'id'=> $a->id,
+                    'user_id'=> $a->user_id,
+                    'user_nickname'=> $a->user->nickname,
+                    'user_avatar'=> $a->user->avatar,
+                    'content'=> $a->content,
+                ];
+                $temp['answer_number'] += 1;
+                if($temp['answer_number'] <= 2){
+                    $temp['answer_user_avatars'][] = $a->user->avatar;
+                }
+            }
+            $res[] = $temp;
+        }
+        return $res;
+    }
+
+    public function add_album_operation(int $user_id, string $image, string $video, string $title){
+        $res = (new \App\Api\Repositories\User\UserAlbumRepository())->create_data($user_id, $image, $video, $title);
+        return true;
+    }
+
+    public function del_album_operation(int $album_id){
+        $res = (new \App\Api\Repositories\User\UserAlbumRepository())->del_data($album_id);
+        return true;
+    }
+
+    public function get_album_list(int $user_id, string $type, int $page, int $limit){
+        if($type == "图片"){
+            $data = (new \App\Api\Repositories\User\UserAlbumRepository())->get_image_list($user_id, $page, $limit);
+        }else{
+            $data = (new \App\Api\Repositories\User\UserAlbumRepository())->get_video_list($user_id, $page, $limit);
+            foreach($data as &$v){
+                $v->created_at = date("Y.m.d", strtotime($v->created_at));
+            }
+        }
+        return $data;
     }
 }

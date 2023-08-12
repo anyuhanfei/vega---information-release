@@ -57,7 +57,36 @@ class EventsRepository{
         return $this->eloquentClass::page($page, $limit)->orderBy('id', 'desc')->pluck('id')->toArray();
     }
 
+    /**
+     * 通过搜索条件获取活动信息
+     *
+     * @param array $where
+     * @return void
+     */
     public function use_search_get_list(array $where){
         return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status'])->get();
+    }
+
+    /**
+     * 根据id获取数据
+     *
+     * @param integer $id
+     * @return void
+     */
+    public function use_id_get_one_data(int $id){
+        return $this->eloquentClass::id($id)->first();
+    }
+
+
+    public function 整理时间数据(string $start_date, string $end_date){
+        $start_time = strtotime($start_date);
+        $end_time = strtotime($end_date);
+        if(date("Y-m-d", $start_time) == date("Y-m-d", $end_time)){
+            // 一日活动
+            return date("H:i", $start_time) . '-' . date("H:i", $end_time) . ' ' . date("m.d", $start_time);
+        }else{
+            // 非一日活动
+            return date("m.d H:i", $start_time) . '-' . date("m.d H:i", $end_time);
+        }
     }
 }

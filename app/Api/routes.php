@@ -55,6 +55,9 @@ Route::group([
     $router->post('user/attention/list', [\App\Api\Controllers\UserSocialController::class, 'attention_list']);
     $router->post('user/attention', [\App\Api\Controllers\UserSocialController::class, 'attention']);
     $router->post('user/fans/list', [\App\Api\Controllers\UserSocialController::class, 'fans_list']);
+    $router->post('user/album/add', [\App\Api\Controllers\UserSocialController::class, 'album_add']);
+    $router->post('user/album/del', [\App\Api\Controllers\UserSocialController::class, 'album_del']);
+    $router->post('user/album/list', [\App\Api\Controllers\UserSocialController::class, 'album_list']);
 
     // 会员其他
     $router->post('user/vip/pay', [\App\Api\Controllers\PayController::class, 'vip']);
@@ -64,6 +67,9 @@ Route::group([
     $router->post('event/category', [\App\Api\Controllers\EventController::class, 'event_category']);
     $router->post('event/create', [\App\Api\Controllers\EventController::class, 'event_create']);
     $router->post('event/list', [\App\Api\Controllers\EventController::class, 'event_list']);
+    $router->post('event/detail', [\App\Api\Controllers\EventController::class, 'event_detail']);
+    $router->post('event/qa/add', [\App\Api\Controllers\UserSocialController::class, 'qa_add']);
+    $router->post('event/qa/list', [\App\Api\Controllers\UserSocialController::class, 'qa_list']);
     
 });
 

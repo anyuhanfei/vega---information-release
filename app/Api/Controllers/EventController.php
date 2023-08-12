@@ -74,4 +74,10 @@ class EventController extends BaseController{
         $list = $this->service->get_event_list($this->user_id, $page, $limit, $search);
         return success("活动列表", $list);
     }
+
+    public function event_detail(Request $request){
+        $event_id = $request->input("event_id", 0) ?? 0;
+        $data = $this->service->get_event_detail($this->user_id, $event_id);
+        return success("活动详情", $data);
+    }
 }
