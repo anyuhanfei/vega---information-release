@@ -33,6 +33,7 @@ class EventCreateRequest extends BaseRequest{
             'video'=> ['required'],
             'service_phone'=> ['required'],
             'information_of_registration_key'=> ['required'],
+            'pay_method'=> ['required', Rule::in(['app微信', 'app支付宝'])],
         ];
     }
 
@@ -61,6 +62,8 @@ class EventCreateRequest extends BaseRequest{
             'video.required'=> '请上传活动介绍视频',
             'service_phone.required'=> '请填写主办方电话',
             'information_of_registration_key.required'=> '请选择报名填写信息表',
+            'pay_method.required'=> '请选择支付方式',
+            'pay_method.in'=> '请选择正确的支付方式',
         ];
     }
 }

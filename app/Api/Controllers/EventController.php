@@ -52,8 +52,9 @@ class EventController extends BaseController{
         $params['video'] = $request->input("video");
         $params['service_phone'] = $request->input("service_phone");
         $params['information_of_registration_key'] = $request->input("information_of_registration_key");
-        $res = $this->service->create_event_operation($this->user_id, $params);
-        return success("创建活动成功");
+        $pay_method = $request->input("pay_method");
+        $pay_data = $this->service->create_event_operation($this->user_id, $pay_method, $params);
+        return success("创建活动成功", ['pay_data'=> $pay_data]);
     }
 
     /**
@@ -75,9 +76,46 @@ class EventController extends BaseController{
         return success("活动列表", $list);
     }
 
+    /**
+     * 活动详情
+     *
+     * @param Request $request
+     * @return void
+     */
     public function event_detail(Request $request){
         $event_id = $request->input("event_id", 0) ?? 0;
         $data = $this->service->get_event_detail($this->user_id, $event_id);
         return success("活动详情", $data);
+    }
+
+    /**
+     * 他人活动列表
+     *
+     * @param \App\Api\Requests\Events\OtherEventListRequest $request
+     * @return void
+     */
+    public function other_event_list(\App\Api\Requests\Events\OtherEventListRequest $request){
+        $other_id = $request->input("other_id", 0) ?? 0;
+        $status = $request->input("status");
+        $page = $request->input("page");
+        $limit = $request->input("limit");
+        $status = $status == "进行中" ? [20, 30] : [40];
+        $data = $this->service->get_user_event_list($this->user_id, $page, $limit, $other_id, $status);
+        return success("他人活动列表", $data);
+    }
+
+    /**
+     * 我的活动列表
+     *
+     * @param \App\Api\Requests\Events\UserEventListRequest $request
+     * @return void
+     */
+    public function user_event_list(\App\Api\Requests\Events\UserEventListRequest $request){
+        $status = $request->input("status");
+        $page = $request->input("page");
+        $limit = $request->input("limit");
+        $status = $status == 'all' ? [0, 10, 19, 20, 30, 40] : [$status];
+        $data = $this->service->get_user_event_list($this->user_id, $page, $limit, 0, $status);
+        return success("我的活动列表", $data);
     }
 }

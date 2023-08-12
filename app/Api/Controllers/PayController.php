@@ -43,8 +43,8 @@ class PayController extends BaseController{
     public function vip(Request $request){
         $vip_name = $request->input('vip_name', '') ?? '';
         $pay_method = $request->input('pay_method', '') ?? '';
-        $data = $this->service->buy_vip($this->user_id, $vip_name, $pay_method);
-        return success("开通vip", $data);
+        $pay_data = $this->service->buy_vip($this->user_id, $vip_name, $pay_method);
+        return success("开通vip", ['pay_data'=> $pay_data]);
     }
 
     /**

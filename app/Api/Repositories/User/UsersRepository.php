@@ -336,4 +336,17 @@ class UsersRepository{
     public function set_user_coordinate(int $user_id, string|float $longitude, string|float $latitude){
         return Redis::set("ulong&lat:{$user_id}", $longitude . "," . $latitude);
     }
+
+    public function update_vip(int $user_id, string $vip_name, string $vip_day){
+        $user = $this->use_id_get_one_data($user_id);
+        if($user){
+            $start_time = $user->vip_expriation_time == null ? time() : strtotime($user->vip_expriation_time);
+            $expriation_time = date("Y-m-d H:i:s", $start_time + (86400 * $vip_day));
+            $this->eloquentClass::id($user_id)->update([
+                'vip'=> $vip_name,
+                'vip_expriation_time'=> $expriation_time
+            ]);
+        }
+        return ['start_time'=> date("Y-m-d H:i:s", $start_time), 'expriation_time'=> $expriation_time];
+    }
 }

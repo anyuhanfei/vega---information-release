@@ -30,14 +30,19 @@ class EventService{
      * @param array $params
      * @return void
      */
-    public function create_event_operation(int $user_id, array $params){
+    public function create_event_operation(int $user_id, string $pay_method, array $params){
         // 解析分类
         $category = (new EventCategoryRepository())->use_id_get_one_data($params['category_id']);
         $one_level_category_id = $category->parent_id;
         $two_level_category_id = $category->id;
         // 创建活动
-        $res = (new EventsRepository())->create_data($user_id, $params['event_type'], $params['title'], $params['sex_limit'], $params['charge_type'], $params['award_content'], $params['site_address'], $params['site_longitude'], $params['site_latitude'], $params['start_time'], $params['end_time'], $one_level_category_id, $two_level_category_id, $params['require_content'], $params['image'], $params['video'], $params['service_phone'], $params['information_of_registration_key']);
-        return $res;
+        $data = (new EventsRepository())->create_data($user_id, $params['event_type'], $params['title'], $params['sex_limit'], $params['charge_type'], $params['award_content'], $params['site_address'], $params['site_longitude'], $params['site_latitude'], $params['start_time'], $params['end_time'], $one_level_category_id, $two_level_category_id, $params['require_content'], $params['image'], $params['video'], $params['service_phone'], $params['information_of_registration_key']);
+        $price = (new SysSettingRepository())->use_id_get_value(33);
+        // 支付
+        // $pay_data = (new PayService())->pay($pay_method, $user_id, $price, $data->id, '发布活动', '发布活动');
+        // 测试阶段直接支付成功
+        $pay_data = (new PayService())->发布活动($data->id, $price);
+        return $pay_data;
     }
 
     /**
@@ -75,16 +80,16 @@ class EventService{
         // 整合全部条件
         $where['id'] = $ids;
         $where['status'] = [20, 30];
-        if($search['title'] != ''){
+        if(!empty($search['title']) && $search['title'] != ''){
             $where['title'] = $search['title'];
         }
-        if($search['sex'] != ''){
+        if(!empty($search['sex']) && $search['sex'] != ''){
             $where['sex'] = $search['sex'];
         }
-        if($search['category_id'] != ''){
+        if(!empty($search['category_id']) && $search['category_id'] != ''){
             $where['oneLevelCategoryId'] = $search['category_id'];
         }
-        if($search['date'] != ''){
+        if(!empty($search['date']) && $search['date'] != ''){
             //TODO
         }
         // 获取数据并整理排序
@@ -101,6 +106,27 @@ class EventService{
                     $data[] = $v;
                 }
             }
+        }
+        return $data;
+    }
+
+    public function get_user_event_list(int $user_id, int $page, int $limit, int $other_id = 0, array $status = []){
+        if($other_id != 0){  // 查看他人的活动列表
+            $where['user_id'] = $other_id;
+        }else{  // 查看自己的活动列表
+            $where['user_id'] = $user_id;
+        }
+        $where['status'] = $status;
+        $list = (new EventsRepository())->use_search_get_list($where);
+        $coordinate = (new UsersRepository())->get_user_coordinate($user_id);
+        $data = [];
+        foreach($list as $v){
+            $v->distance = get_distance($coordinate['longitude'], $coordinate['latitude'], $v->site_longitude, $v->site_latitude);
+            $v->time = (new EventsRepository())->整理时间数据($v->start_time, $v->end_time);
+            $v->user_avatar = $v->user->avatar;
+            $v->user_nickname = $v->user->nickname;
+            unset($v->start_time, $v->end_time, $v->user, $v->site_longitude, $v->site_latitude);
+            $data[] = $v;
         }
         return $data;
     }
@@ -149,6 +175,7 @@ class EventService{
             'status'=> $event->status,
             'is_apply'=> $is_apply,
             'price'=> $price,
+            'information_of_registration_key'=> comma_str_to_array($event->information_of_registration_key),
         ];
     }
 

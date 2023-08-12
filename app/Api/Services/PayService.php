@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Log;
 
 use App\Api\Repositories\Log\LogUserPayRepository;
 use App\Api\Repositories\Idx\IdxSettingRepository;
+use App\Api\Repositories\User\UsersRepository;
+use App\Api\Repositories\Events\EventsRepository;
+use App\Api\Repositories\Events\EventOrderRepository;
+use App\Api\Repositories\Log\LogUserVipRepository;
 
 use App\Api\Tools\Aliyun\AliyunPayTool;
 use App\Api\Tools\Wx\WxPayTool;
-
 
 class PayService{
     protected $pay_type = ['充值'];
@@ -39,7 +42,18 @@ class PayService{
         if(!$vip){
             throwBusinessException("选择的vip模式不存在");
         }
-        return $this->pay($pay_method, $user_id, $vip->price, '', '开通vip', '开通vip' . $vip->name);
+        $user = (new UsersRepository())->use_id_get_one_data($user_id);
+        if($user->vip != ''){
+            $vip_level = ['包月'=> 1, '包季'=> 2, '包年'=> 3];
+            if($vip_level[$user->vip] > $vip_level[$vip->value0]){
+                throwBusinessException("当前您是{$user->vip}会员, 请购买{$user->vip}以上等级进行续费");
+            }
+        }
+        // 支付
+        // $pay_data = $this->pay($pay_method, $user_id, $vip->price, $vip->name, '开通vip', '开通vip' . $vip->name);
+        // 测试阶段直接完成
+        $pay_data = $this->开通vip($user_id, $vip_name);
+        return $pay_data;
     }
 
 
@@ -132,7 +146,14 @@ class PayService{
             }
             // 这里根据支付记录中存储的订单类型执行对应的支付成功的后续操作
             switch($log->order_type){
-                case "充值":
+                case "活动报名":
+                    $this->活动报名($log->remark);
+                    break;
+                case "发布活动":
+                    $this->发布活动($log->remark, $log->money);
+                    break;
+                case "开通vip":
+                    $this->开通vip($log->user_id, $log->remark);
                     break;
                 default:
                     break;
@@ -141,6 +162,33 @@ class PayService{
         }catch(\Exception $e){
             DB::rollback();
             throwBusinessException($e->getMessage());
+        }
+        return true;
+    }
+
+    public function 活动报名(string $order_no){
+        $event_order = (new EventOrderRepository())->use_order_no_get_one_data($order_no);
+        if($event_order){
+            (new EventOrderRepository())->use_order_no_update_status($order_no, 10);
+        }
+        return true;
+    }
+
+    public function 发布活动(int $id, int|float|string $money){
+        $event = (new EventsRepository())->use_id_get_one_data($id);
+        if($event){
+            (new EventsRepository())->use_id_update_status_10($id, floatval($money));
+        }
+        return true;
+    }
+
+    public function 开通vip(int $user_id, string $vip_name){
+        $vip = (new IdxSettingRepository())->use_vipname_get_one_data($vip_name);
+        if($vip){
+            // 给会员添加vip时间
+            $res_data = (new UsersRepository())->update_vip($user_id, $vip->value0, $vip->value4);
+            // 添加vip购买记录
+            (new LogUserVipRepository())->create_data($user_id, $vip_name, $vip->value4, $res_data['start_time']);
         }
         return true;
     }

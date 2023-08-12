@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 系统消息记录表
+ * vip购买记录表
  */
 class LogUserVip extends Model{
 	use HasDateTimeFormatter;

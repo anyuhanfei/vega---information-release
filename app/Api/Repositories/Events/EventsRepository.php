@@ -64,7 +64,7 @@ class EventsRepository{
      * @return void
      */
     public function use_search_get_list(array $where){
-        return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status'])->get();
+        return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude'])->get();
     }
 
     /**
@@ -75,6 +75,20 @@ class EventsRepository{
      */
     public function use_id_get_one_data(int $id){
         return $this->eloquentClass::id($id)->first();
+    }
+
+    /**
+     * 修改指定活动的状态为已支付状态，并且存储支付金额
+     *
+     * @param integer $id
+     * @param float $money
+     * @return void
+     */
+    public function use_id_update_status_10(int $id, float $money){
+        return $this->eloquentClass::id($id)->update([
+            'status'=> 10,
+            'pay_price'=> $money
+        ]);
     }
 
 
