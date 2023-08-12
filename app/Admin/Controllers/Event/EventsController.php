@@ -126,6 +126,9 @@ class EventsController extends AdminController
                         return $form->response()->error("请填写驳回原因");
                     }
                 }
+                if($form->status == 20){
+                    $form->reject_cause = '';
+                }
             });
             $form->saved(function(Form $form, $result){
                 if($form->status == 19){

@@ -34,6 +34,7 @@ Route::group([
     $router->resource('setting/user_avatars', 'Idx\IdxSettingController');
     $router->resource('setting/information_of_registration_key', 'Idx\IdxSettingController');
     $router->resource('setting/vip', 'Idx\IdxSettingController');
+    $router->resource('setting/credit_level', 'Idx\IdxSettingController');
     $router->get('api/test', 'Idx\IdxSettingController@api_test');
 
     $router->resource('event/category', 'Event\EventCategoryController');

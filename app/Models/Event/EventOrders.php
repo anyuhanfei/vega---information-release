@@ -42,7 +42,7 @@ class EventOrders extends Model{
      * @return void
      */
     public function user(){
-        return $this->hasOne(\App\Models\User\Users::class, "user_id", 'id');
+        return $this->hasOne(\App\Models\User\Users::class, "id", 'user_id');
     }
 
     /**
@@ -51,7 +51,7 @@ class EventOrders extends Model{
      * @return void
      */
     public function event(){
-        return $this->hasOne(\App\Models\Event\Events::class, "event_id", 'id');
+        return $this->hasOne(\App\Models\Event\Events::class, "id", 'event_id');
     }
 
     /**
@@ -60,7 +60,7 @@ class EventOrders extends Model{
      * @return void
      */
     public function publisher(){
-        return $this->hasOne(\App\Models\User\Users::class, 'publisher_id', 'id');
+        return $this->hasOne(\App\Models\User\Users::class, 'id', 'publisher_id');
     }
 
 

@@ -67,4 +67,16 @@ class UserController extends BaseController{
         (new UserService())->set_user_coordinate($this->user_id, $longitude, $latitude);
         return success("设置成功");
     }
+
+    /**
+     * 会员信用分信息
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function credit(Request $request){
+        $other_id = $request->input('other_id', 0) ?? 0;
+        $data = (new UserService())->get_user_credit($other_id == 0 ? $this->user_id : $other_id);
+        return success("信用信息", $data);
+    }
 }

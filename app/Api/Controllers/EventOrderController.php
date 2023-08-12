@@ -32,4 +32,30 @@ class EventOrderController extends BaseController{
         return success("创建成功", ['pay_data'=> $pay_data]);
     }
 
+    /**
+     * 获取服务的全部订单
+     *
+     * @param \App\Api\Requests\Events\EventOrdersRequest $request
+     * @return void
+     */
+    public function event_orders(\App\Api\Requests\Events\EventOrdersRequest $request){
+        $event_id = $request->input('event_id', 0) ?? 0;
+        $type = $request->input('type');
+        $data = $this->service->get_event_orders($this->user_id, $event_id, $type);
+        return success("订单列表", $data);
+    }
+
+    /**
+     * 审核订单
+     *
+     * @param \App\Api\Requests\Events\EventOrderAuditRequest $request
+     * @return void
+     */
+    public function event_order_audit(\App\Api\Requests\Events\EventOrderAuditRequest $request){
+        $order_no = $request->input('order_no');
+        $status = $request->input('status');
+        $res = $this->service->audit_order_operation($this->user_id, $order_no, $status);
+        return success("审核订单", $order_no);
+    }
+
 }

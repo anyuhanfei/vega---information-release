@@ -62,6 +62,7 @@ Route::group([
     // 会员其他
     $router->post('user/vip/pay', [\App\Api\Controllers\PayController::class, 'vip']);
     $router->post('user/coordinate', [\App\Api\Controllers\UserController::class, 'set_coordinate']);
+    $router->post('user/credit', [\App\Api\Controllers\UserController::class, 'credit']);
 
     // 活动
     $router->post('event/category', [\App\Api\Controllers\EventController::class, 'event_category']);
@@ -75,6 +76,7 @@ Route::group([
 
     // 活动订单
     $router->post('event/order/create', [\App\Api\Controllers\EventOrderController::class, 'order_create']);
+    $router->post('event/order/list', [\App\Api\Controllers\EventOrderController::class, 'event_orders']);
 
 });
 

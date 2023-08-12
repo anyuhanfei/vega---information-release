@@ -47,4 +47,46 @@ class EventOrderService{
         $pay_data = (new PayService())->活动报名($data->order_no);
         return $pay_data;
     }
+
+    /**
+     * 获取活动的全部订单
+     *
+     * @param integer $user_id
+     * @param integer $event_id
+     * @param string $type
+     * @return void
+     */
+    public function get_event_orders(int $user_id, int $event_id, string $type){
+        if($type == '待审核'){
+            $list = (new EventOrderRepository())->use_status_get_event_orders_data($event_id, [10]);
+        }else{
+            $list = (new EventOrderRepository())->use_status_get_event_orders_data($event_id, [20, 30, 40, 50]);
+        }
+        $data = [];
+        foreach($list as $v){
+            $data[] = [
+                'order_no'=> $v->order_no,
+                'user_id'=> $v->user_id,
+                'user_nickname'=> $v->user->nickname,
+                'user_avatar'=> $v->user->avatar,
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * 审核订单操作
+     */
+    public function audit_order_operation(int $user_id, string $order_no, int $status){
+        $order = (new EventOrderRepository())->use_order_no_get_one_data($order_no);
+        if(!$order || $order->publisher_id != $user_id){
+            throwBusinessException("无权限操作此订单");
+        }
+        if($status == '拒绝'){
+            (new EventOrderRepository())->use_order_no_update_status($order_no, 19);
+        }else{
+            (new EventOrderRepository())->use_order_no_update_status($order_no, 20);
+        }
+        return true;
+    }
 }

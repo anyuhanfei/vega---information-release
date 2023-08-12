@@ -133,7 +133,18 @@ class IdxSetting extends Model implements Sortable{
                 'update_allowed'=> true,
                 'delete_allowed'=> false,
                 'create_allowed'=> false,
-            ]
+            ],
+            'credit_level'=> [
+                'title'=> "信用等级",
+                'fields'=> [
+                    ['field'=> 'name', 'field_name'=> '名称', 'input_type'=> 'text', 'required'=> true],
+                    ['field'=> 'minimum', 'field_name'=> '最低信用值', 'input_type'=> 'number', 'required'=> true],
+                    ['field'=> 'maximum', 'field_name'=> '最高信用值', 'input_type'=> 'number', 'required'=> true]
+                ],
+                'update_allowed'=> true,
+                'delete_allowed'=> true,
+                'create_allowed'=> true,
+            ],
         ];
     }
 

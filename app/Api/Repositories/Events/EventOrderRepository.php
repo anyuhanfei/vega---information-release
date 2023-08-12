@@ -40,4 +40,25 @@ class EventOrderRepository{
             'status'=> $status,
         ]);
     }
+
+    /**
+     * 获取指定状态、指定活动的活动订单
+     *
+     * @param integer $event_id
+     * @param array $status
+     * @return void
+     */
+    public function use_status_get_event_orders_data(int $event_id, array $status){
+        return $this->eloquentClass::with(['user'])->eventId($event_id)->status($status)->get();
+    }
+
+    /**
+     * 获取会员完成订单数量
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function get_user_over_order_number(int $user_id){
+        return $this->eloquentClass::userId($user_id)->status([40, 50])->count();
+    }
 }

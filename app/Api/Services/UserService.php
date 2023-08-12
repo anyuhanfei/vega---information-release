@@ -1,7 +1,6 @@
 <?php
 namespace App\Api\Services;
 
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
@@ -9,6 +8,8 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Api\Repositories\User\UsersRepository;
 use App\Api\Repositories\User\UserDetailRepository;
 use App\Api\Repositories\User\UserTagsRepository;
+use App\Api\Repositories\Events\EventOrderRepository;
+use App\Api\Repositories\Idx\IdxSettingRepository;
 
 class UserService{
     /**
@@ -119,5 +120,33 @@ class UserService{
     public function set_user_coordinate(int $user_id, string|float $longitude, string|float $latitude){
         (new UsersRepository())->set_user_coordinate($user_id, $longitude, $latitude);
         return true;
+    }
+
+    /**
+     * 获取会员信用分信息
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function get_user_credit(int $user_id){
+        $user = (new UsersRepository())->use_id_get_one_data($user_id);
+        // 获取会员的信用等级
+        $credit_level = (new IdxSettingRepository())->use_type_get_datas('credit_level');
+        $level_name = '';
+        foreach($credit_level as $v){
+            if($user->funds->credit >= $v->minimum && $user->funds->credit <= $v->maximum){
+                $level_name = $v->name;
+            }
+        }
+        return [
+            'user_id'=> $user->id,
+            'avatar'=> $user->avatar,
+            'nickname'=> $user->nickname,
+            'sex'=> $user->sex,
+            'age'=> $user->age,
+            'credit'=> $user->funds->credit,
+            'credit_level'=> $level_name,
+            'order_number'=> (new EventOrderRepository())->get_user_over_order_number($user_id),
+        ];
     }
 }
