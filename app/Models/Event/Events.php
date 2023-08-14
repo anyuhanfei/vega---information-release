@@ -53,7 +53,7 @@ class Events extends Model{
      * @return void
      */
     public function status_array(){
-        return ['0'=> '未支付', '10'=> '未审核', '19'=> '已驳回', '20'=> '报名中', '30'=> '进行中', '40'=> '已完成'];
+        return ['-1'=> "已取消", '0'=> '未支付', '10'=> '未审核', '19'=> '已驳回', '20'=> '报名中', '30'=> '进行中', '40'=> '已完成'];
     }
 
     protected function statusText(): Attribute{

@@ -3,6 +3,7 @@ namespace App\Api\Services;
 
 use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\Events\EventCategoryRepository;
+use App\Api\Repositories\Events\EventOrderRepository;
 use App\Api\Repositories\Sys\SysSettingRepository;
 use App\Api\Repositories\User\UsersRepository;
 
@@ -43,6 +44,16 @@ class EventService{
         // 测试阶段直接支付成功
         $pay_data = (new PayService())->发布活动($data->id, $price);
         return $pay_data;
+    }
+
+    public function update_event_operation(int $user_id, int $event_id, array $params){
+        // 解析分类
+        $category = (new EventCategoryRepository())->use_id_get_one_data($params['category_id']);
+        $one_level_category_id = $category->parent_id;
+        $two_level_category_id = $category->id;
+        // 修改活动信息
+        $data = (new EventsRepository())->update_data($event_id, $params['event_type'], $params['title'], $params['sex_limit'], $params['charge_type'], $params['award_content'], $params['site_address'], $params['site_longitude'], $params['site_latitude'], $params['start_time'], $params['end_time'], $one_level_category_id, $two_level_category_id, $params['require_content'], $params['image'], $params['video'], $params['service_phone'], $params['information_of_registration_key']);
+        return true;
     }
 
     /**
@@ -100,10 +111,11 @@ class EventService{
                 if($v->id == $id){
                     $v->distance = $withdist[$id];
                     $v->time = (new EventsRepository())->整理时间数据($v->start_time, $v->end_time);
-                    $v->user_avatar = $v->user->avatar;
-                    $v->user_nickname = $v->user->nickname;
+                    $v->publish_avatar = $v->user->avatar;
+                    $v->publish_nickname = $v->user->nickname;
                     unset($v->start_time, $v->end_time, $v->user);
                     $data[] = $v;
+                    [$v->user_number, $v->user_avatars] = (new EventOrderRepository())->获取活动的报名数据($v->id);
                 }
             }
         }
@@ -117,7 +129,7 @@ class EventService{
             $where['user_id'] = $user_id;
         }
         $where['status'] = $status;
-        $list = (new EventsRepository())->use_search_get_list($where);
+        $list = (new EventsRepository())->use_search_get_list($where, $page, $limit);
         $coordinate = (new UsersRepository())->get_user_coordinate($user_id);
         $data = [];
         foreach($list as $v){
@@ -126,6 +138,8 @@ class EventService{
             $v->user_avatar = $v->user->avatar;
             $v->user_nickname = $v->user->nickname;
             unset($v->start_time, $v->end_time, $v->user, $v->site_longitude, $v->site_latitude);
+            [$v->user_number, $v->user_avatars] = (new EventOrderRepository())->获取活动的报名数据($v->id);
+            $v->status = (new EventsRepository())->status_array()[$v->status];
             $data[] = $v;
         }
         return $data;
@@ -179,4 +193,36 @@ class EventService{
         ];
     }
 
+    public function get_user_event_detail(int $user_id, int $event_id){
+        $event = (new EventsRepository())->use_id_get_one_data($event_id);
+        if(!$event || $event->user_id != $user_id){
+            throwBusinessException("活动不存在或已下架");
+        }
+        $event->one_level_category = $event->one_level_category;
+        $event->two_level_category = $event->two_level_category;
+        return $event;
+    }
+
+    /**
+     * 取消会员操作
+     *
+     * @param integer $user_id
+     * @param integer $event_id
+     * @return void
+     */
+    public function user_event_cancel_operation(int $user_id, int $event_id){
+        $event = (new EventsRepository())->use_id_get_one_data($event_id);
+        if(!$event || $event->user_id != $user_id){
+            throwBusinessException("活动不存在或已下架");
+        }
+        if($event->status == -1){
+            throwBusinessException("活动已取消,请勿重复提交");
+        }
+        if($event->status > 20){
+            throwBusinessException("当前活动已无法取消");
+        }
+        // 取消活动
+        (new EventsRepository())->cancel_data($event_id);
+        return true;
+    }
 }

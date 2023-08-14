@@ -61,4 +61,47 @@ class EventOrderRepository{
     public function get_user_over_order_number(int $user_id){
         return $this->eloquentClass::userId($user_id)->status([40, 50])->count();
     }
+
+    /**
+     * 获取活动已报名的订单
+     *
+     * @param integer $event_id
+     * @return void
+     */
+    public function get_event_users_data(int $event_id){
+        return $this->eloquentClass::with(['user'])->eventId($event_id)->status([20, 30, 40, 50])->get();
+    }
+
+    public function 获取活动的报名数据(int $event_id){
+        $orders = $this->get_event_users_data($event_id);
+        $user_avatars = [];
+        foreach($orders as $order){
+            if(count($user_avatars) < 2){
+                $user_avatars[] = $order->user->avatar;
+            }
+        }
+        // 报名人数，部分会员头像
+        return [count($orders), $user_avatars];
+    }
+
+    public function 集体取消订单(int $event_id){
+        $orders = $this->eloquentClass::with(['user'])->eventId($event_id)->get();
+        foreach($orders as $order){
+            $this->cancel_order('', $order);
+        }
+    }
+
+    public function cancel_order(string $order_no = '', $order = null){
+        if($order == null){
+            $order = $this->eloquentClass::orderNo($order_no)->first();
+        }
+        if($order){
+            $this->eloquentClass::orderNo($order->order_no)->update([
+                'status'=> -1,
+            ]);
+            if($order->pay_price > 0){
+                // TODO::退款
+            }
+        }
+    }
 }

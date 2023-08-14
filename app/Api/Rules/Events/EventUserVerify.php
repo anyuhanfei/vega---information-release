@@ -17,7 +17,7 @@ class EventUserVerify implements Rule, DataAwareRule{
 
     public function passes($attribute, $value){
         $data = (new EventsRepository())->use_id_get_one_data($value);
-        return $data->user_id == $this->data['user_id'];
+        return $data && $data->user_id == $this->data['user_id'];
     }
 
     public function message(){

@@ -7,9 +7,36 @@ use Illuminate\Support\Facades\Redis;
 class EventsRepository{
     protected $eloquentClass = Model::class;
 
+    public function status_array(){
+        return (new $this->eloquentClass)->status_array();
+    }
+
     public function create_data(int $user_id, string $event_type, string $title, string $sex_limit, string $charge_type, string $award_content, string $site_address, string $site_longitude, string $site_latitude, string $start_time, string $end_time, int $one_level_category_id, int $two_level_category_id, string $require_content, string $image, string $video, string $service_phone, string $information_of_registration_key){
         return $this->eloquentClass::create([
             'user_id' => $user_id,
+            'event_type' => $event_type,
+            'title' => $title,
+            'sex_limit' => $sex_limit,
+            'charge_type' => $charge_type,
+            'award_content' => $award_content,
+            'site_address' => $site_address,
+            'site_longitude' => $site_longitude,
+            'site_latitude' => $site_latitude,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'one_level_category_id' => $one_level_category_id,
+            'two_level_category_id' => $two_level_category_id,
+            'require_content' => $require_content,
+            'image' => $image,
+            'video' => $video,
+            'service_phone' => $service_phone,
+            'information_of_registration_key' => $information_of_registration_key,
+            'status'=> 0
+        ]);
+    }
+
+    public function update_data(int $event_id, string $event_type, string $title, string $sex_limit, string $charge_type, string $award_content, string $site_address, string $site_longitude, string $site_latitude, string $start_time, string $end_time, int $one_level_category_id, int $two_level_category_id, string $require_content, string $image, string $video, string $service_phone, string $information_of_registration_key){
+        return $this->eloquentClass::id($event_id)->update([
             'event_type' => $event_type,
             'title' => $title,
             'sex_limit' => $sex_limit,
@@ -63,8 +90,8 @@ class EventsRepository{
      * @param array $where
      * @return void
      */
-    public function use_search_get_list(array $where){
-        return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude'])->get();
+    public function use_search_get_list(array $where, int $page = 1, int $limit = 100){
+        return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude', 'reject_cause'])->get();
     }
 
     /**
@@ -89,6 +116,16 @@ class EventsRepository{
             'status'=> 10,
             'pay_price'=> $money
         ]);
+    }
+
+    public function cancel_data(int $id){
+        // 取消活动
+        $this->eloquentClass::id($id)->update([
+            'status'=> -1,
+        ]);
+        // TODO::退款
+        // 取消订单
+        (new EventOrderRepository())->集体取消订单($id);
     }
 
 

@@ -69,6 +69,7 @@ class EventOrderService{
                 'user_id'=> $v->user_id,
                 'user_nickname'=> $v->user->nickname,
                 'user_avatar'=> $v->user->avatar,
+                'status'=> $v->status == 10 ? '待审核' : "已通过",
             ];
         }
         return $data;
@@ -84,6 +85,7 @@ class EventOrderService{
         }
         if($status == '拒绝'){
             (new EventOrderRepository())->use_order_no_update_status($order_no, 19);
+            //TODO：：退款
         }else{
             (new EventOrderRepository())->use_order_no_update_status($order_no, 20);
         }

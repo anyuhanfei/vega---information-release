@@ -58,6 +58,34 @@ class EventController extends BaseController{
     }
 
     /**
+     * 修改活动信息，审核驳回后使用
+     *
+     * @param \App\Api\Requests\Events\EventUpdateRequest $request
+     * @return void
+     */
+    public function event_update(\App\Api\Requests\Events\EventUpdateRequest $request){
+        $event_id = $request->input("event_id");
+        $params['event_type'] = $request->input("event_type");
+        $params['title'] = $request->input("title");
+        $params['sex_limit'] = $request->input("sex_limit");
+        $params['charge_type'] = $request->input("charge_type");
+        $params['award_content'] = $request->input("award_content");
+        $params['site_address'] = $request->input("site_address");
+        $params['site_longitude'] = $request->input("site_longitude");
+        $params['site_latitude'] = $request->input("site_latitude");
+        $params['start_time'] = $request->input("start_time");
+        $params['end_time'] = $request->input("end_time");
+        $params['category_id'] = $request->input("category_id");
+        $params['require_content'] = $request->input("require_content");
+        $params['image'] = $request->input("image");
+        $params['video'] = $request->input("video");
+        $params['service_phone'] = $request->input("service_phone");
+        $params['information_of_registration_key'] = $request->input("information_of_registration_key");
+        $pay_data = $this->service->update_event_operation($this->user_id, $event_id, $params);
+        return success("修改活动成功，请等待审核");
+    }
+
+    /**
      * 获取活动列表
      *
      * @param \App\Api\Requests\PageRequest $request
@@ -77,7 +105,7 @@ class EventController extends BaseController{
     }
 
     /**
-     * 活动详情
+     * 活动详情（展示用）
      *
      * @param Request $request
      * @return void
@@ -117,5 +145,26 @@ class EventController extends BaseController{
         $status = $status == 'all' ? [0, 10, 19, 20, 30, 40] : [$status];
         $data = $this->service->get_user_event_list($this->user_id, $page, $limit, 0, $status);
         return success("我的活动列表", $data);
+    }
+
+    /**
+     * 获取我的获取详情（修改活动信息用）
+     */
+    public function user_event_detail(Request $request){
+        $event_id = $request->input("event_id" ?? 0) ?? 0;
+        $data = $this->service->get_user_event_detail($this->user_id, $event_id);
+        return success("我的活动详情", $data);
+    }
+
+    /**
+     * 会员取消活动
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function user_event_cancel(Request $request){
+        $event_id = $request->input("event_id" ?? 0) ?? 0;
+        $res = $this->service->user_event_cancel_operation($this->user_id, $event_id);
+        return success("取消成功");
     }
 }

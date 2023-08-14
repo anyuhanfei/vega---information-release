@@ -29,7 +29,7 @@ class LoginController extends BaseController{
         $phone = $request->input('phone');
         $password = $request->input('password');
         $this->service->register('', $phone, '', $password);
-        return success('注册成功');
+        return success('注册成功', $this->service->login('phone_smscode', ['phone'=> $phone]));
     }
 
     /**

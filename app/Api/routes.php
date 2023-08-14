@@ -67,12 +67,14 @@ Route::group([
     // 活动
     $router->post('event/category', [\App\Api\Controllers\EventController::class, 'event_category']);
     $router->post('event/create', [\App\Api\Controllers\EventController::class, 'event_create']);
+    $router->post('event/update', [\App\Api\Controllers\EventController::class, 'event_update']);
     $router->post('event/list', [\App\Api\Controllers\EventController::class, 'event_list']);
     $router->post('event/detail', [\App\Api\Controllers\EventController::class, 'event_detail']);
     $router->post('event/qa/add', [\App\Api\Controllers\UserSocialController::class, 'qa_add']);
     $router->post('event/qa/list', [\App\Api\Controllers\UserSocialController::class, 'qa_list']);
     $router->post('event/other/list', [\App\Api\Controllers\EventController::class, 'other_event_list']);
     $router->post('event/user/list', [\App\Api\Controllers\EventController::class, 'user_event_list']);
+    $router->post('event/user/cancel', [\App\Api\Controllers\EventController::class, 'user_event_cancel']);
 
     // 活动订单
     $router->post('event/order/create', [\App\Api\Controllers\EventOrderController::class, 'order_create']);
