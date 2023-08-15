@@ -24,6 +24,12 @@ class EventOrderRepository{
         ]);
     }
 
+    /**
+     * 使用订单编号获取一条数据
+     *
+     * @param string|integer $order_no
+     * @return void
+     */
     public function use_order_no_get_one_data(string|int $order_no){
         return $this->eloquentClass::orderNo($order_no)->first();
     }
@@ -91,6 +97,13 @@ class EventOrderRepository{
         }
     }
 
+    /**
+     * 取消订单操作
+     *
+     * @param string $order_no
+     * @param [type] $order
+     * @return void
+     */
     public function cancel_order(string $order_no = '', $order = null){
         if($order == null){
             $order = $this->eloquentClass::orderNo($order_no)->first();
@@ -104,4 +117,33 @@ class EventOrderRepository{
             }
         }
     }
+
+    /**
+     * 获取会员已完成的订单
+     *
+     * @param integer $user_id
+     * @param integer $page
+     * @param integer $limit
+     * @return void
+     */
+    public function get_user_over_orders(int $user_id, int $page = 1, int $limit = 10){
+        return $this->eloquentClass::with(['event', 'publisher'])->userId($user_id)->page($page, $limit)->status([40, 50])->orderBy("created_at", 'desc')->get();
+    }
+
+    /**
+     * 获取我自己参与的订单，可根据状态筛选
+     *
+     * @param integer $user_id
+     * @param integer|array $status
+     * @param integer $page
+     * @param integer $limit
+     * @return void
+     */
+    public function use_status_get_user_over_orders(int $user_id, int|array $status, int $page = 1, int $limit = 10){
+        if(is_int($status)){
+            $status = [$status];
+        }
+        return $this->eloquentClass::with([['event', 'publisher']])->userId($user_id)->page($page, $limit)->status($status)->orderBy("created_at", 'desc')->get();
+    }
 }
+

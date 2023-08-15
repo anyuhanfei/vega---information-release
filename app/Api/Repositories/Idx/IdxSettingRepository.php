@@ -86,6 +86,20 @@ class IdxSettingRepository{
         return $res;
     }
 
+    public function get_information_of_registration_key_list(){
+        $data = $this->use_type_get_datas("information_of_registration_key")->toArray();
+        $res = [];
+        foreach($data as $key){
+            if($key['is_show'] == 1){
+                $res[] = [
+                    'key_name'=> $key['key_name'],
+                    'input_type'=> $key['input_type'],
+                ];
+            }
+        }
+        return $res;
+    }
+
     /**
      * 通过标签名获取一条数据
      * 用于检测指定的标签是否存在
@@ -107,4 +121,15 @@ class IdxSettingRepository{
     public function use_vipname_get_one_data(string $vip_name){
         return $this->eloquentClass::type('vip')->where("value0", $vip_name)->first();
     }
+
+    /**
+     * 获取指定key的数据
+     *
+     * @param array $keys
+     * @return void
+     */
+    public function get_information_of_registration_key_details(array $keys){
+        return $this->eloquentClass::whereIn("value0", $keys)->select(['value0 as key_name', 'value1 as input_type'])->withTrashed()->get();
+    }
+
 }

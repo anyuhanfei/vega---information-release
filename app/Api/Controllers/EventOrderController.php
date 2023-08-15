@@ -58,4 +58,20 @@ class EventOrderController extends BaseController{
         return success("审核订单", $order_no);
     }
 
+    public function other_orders(\App\Api\Requests\PageRequest $request){
+        $other_id = $request->input("other_id");
+        $page = $request->input("page");
+        $limit = $request->input("limit");
+        $data = $this->service->get_other_orders($other_id, $page, $limit);
+        return success("他人的订单", $data);
+    }
+
+    public function user_orders(Request $request){
+        $status = $request->input('status');
+        $page = $request->input("page");
+        $limit = $request->input("limit");
+        $data = $this->service->get_user_orders($this->user_id, $status, $page, $limit);
+        return success("我的订单", $data);
+    }
+
 }

@@ -111,4 +111,14 @@ class SysController extends BaseController{
         $res = $this->service->get_setting_list($type);
         return success($res['msg'], $res['data']);
     }
+
+    /**
+     * 获取举办活动费用
+     *
+     * @return void
+     */
+    public function release_price(){
+        $data = $this->service->get_release_price($this->user_id);
+        return success("举办活动费用", ['price'=> $data]);
+    }
 }

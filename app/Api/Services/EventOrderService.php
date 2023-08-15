@@ -91,4 +91,61 @@ class EventOrderService{
         }
         return true;
     }
+
+    /**
+     * 获取他人订单列表
+     *
+     * @param integer $other_id
+     * @param integer $page
+     * @param integer $limit
+     * @return void
+     */
+    public function get_other_orders(int $other_id, int $page, int $limit){
+        $list = (new EventOrderRepository())->get_user_over_orders($other_id, $page, $limit);
+        $data = [];
+        foreach($list as $v){
+            [$user_number, $user_avatars] = (new EventOrderRepository())->获取活动的报名数据($v->id);
+            $data[] = [
+                'event_id'=> $v->event_id,
+                'event_title'=> $v->event->title,
+                'event_address'=> $v->event->site_address,
+                'event_image'=> $v->event->image,
+                'publisher_nickname'=> $v->publisher->nickname,
+                'publisher_avatar'=> $v->publisher->avatar,
+                'event_start_time'=> date("m月d日", $v->event->start_time),
+                'user_number'=> $user_number,
+                'user_avatars'=> $user_avatars,
+            ];
+        }
+        return $data;
+    }
+
+    public function get_user_orders(int $user_id, string $status, int $page, int $limit){
+        $status = [
+            '全部'=> [-1, 0, 10, 19, 20, 30, 40, 50],
+            '报名中'=> [20],
+            '审核中'=> [10],
+            '进行中'=> [30],
+            '待评价'=> [40],
+            '已完成'=> [50],
+        ];
+        $list = (new EventOrderRepository())->use_status_get_user_over_orders($user_id, $status, $page, $limit);
+        $coordinate = (new UsersRepository())->get_user_coordinate($user_id);
+        $data = [];
+        foreach($list as $v){
+            [$user_number, $user_avatars] = (new EventOrderRepository())->获取活动的报名数据($v->id);
+            $data[] = [
+                'order_no'=> $v->order_no,
+                'distance'=> get_distance($coordinate['longitude'], $coordinate['latitude'], $v->site_longitude, $v->site_latitude),
+                'time'=> (new EventsRepository())->整理时间数据($v->start_time, $v->end_time),
+                'publisher_avatar'=> $v->publisher->avatar,
+                'publisher_nickname'=> $v->publisher->nickname,
+                'event_image'=> $v->event->image,
+                'event_title'=> $v->event->title,
+                'status'=> $v->status,
+                'user_number'=> $user_number,
+                'user_avatars'=> $user_avatars,
+            ];
+        }
+    }
 }

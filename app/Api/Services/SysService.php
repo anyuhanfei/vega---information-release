@@ -8,7 +8,8 @@ use App\Api\Repositories\Article\ArticleRepository;
 use App\Api\Repositories\Article\ArticleCategoryRepository;
 use App\Api\Repositories\Article\ArticleTagRepository;
 use App\Api\Repositories\Idx\IdxSettingRepository;
-
+use App\Api\Repositories\Sys\SysSettingRepository;
+use App\Api\Repositories\User\UsersRepository;
 
 class SysService{
     /**
@@ -182,11 +183,35 @@ class SysService{
             case 'user_avatars':
                 $data = $this->get_setting_user_avatars_list();
                 break;
+            case "information_of_registration_key":
+                $data = $this->get_setting_information_of_registration_key_list();
+                break;
             default:
                 $data = $IdxSettingRepository->use_type_get_datas($type);
                 break;
         }
         return ['msg'=> $IdxSettingRepository->get_type_name($type), 'data'=> $data];
+    }
+
+    /**
+     * 获取当前举办费用
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function get_release_price(int $user_id){
+        // 获取基础费用
+        $price = (new SysSettingRepository())->use_id_get_value(33);
+        // 获取会员等级
+        $user = (new UsersRepository())->use_id_get_one_data($user_id);
+        // 获取等级折扣
+        $vip_discount = 0;
+        if($user->vip != ''){
+            $vip = (new IdxSettingRepository())->use_vipname_get_one_data($user->vip);
+            $vip_discount = $vip->value3;
+        }
+        // 返回费用
+        return round($price * (1 - $vip_discount * 0.01), 2);
     }
 
     /**
@@ -197,6 +222,17 @@ class SysService{
     private function get_setting_user_avatars_list():array{
         $IdxSettingRepository = new IdxSettingRepository();
         $data = $IdxSettingRepository->random_get_user_avatars_list(4);
+        return $data;
+    }
+
+    /**
+     * 获取信息类型的列表
+     *
+     * @return array
+     */
+    private function get_setting_information_of_registration_key_list():array{
+        $IdxSettingRepository = new IdxSettingRepository();
+        $data = $IdxSettingRepository->get_information_of_registration_key_list();
         return $data;
     }
 }

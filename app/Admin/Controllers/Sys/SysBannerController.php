@@ -68,7 +68,9 @@ class SysBannerController extends BaseController{
             // 清除缓存
             $form->saving(function(Form $form){
                 (new SysBannerRepository())->del_cache($form->site);
-                (new SysBannerRepository())->del_cache($form->model()->site);
+                if($form->isEditing()){
+                    (new SysBannerRepository())->del_cache($form->model()->site);
+                }
             });
             $form->deleted(function(Form $form, $result){
                 (new SysBannerRepository())->del_cache($form->site);

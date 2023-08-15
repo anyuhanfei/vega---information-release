@@ -24,7 +24,7 @@ class EventCategoryRepository{
     public function use_get_tree_data(){
         $data = $this->eloquentClass::parentId(0)->get();
         foreach($data as &$v){
-            unset($v->created_at, $v->deleted_at, $v->updated_at, $v->parent_id, $v->icon);
+            unset($v->created_at, $v->deleted_at, $v->updated_at, $v->parent_id);
             foreach($v->children as &$c){
                 unset($c->created_at, $c->deleted_at, $c->updated_at, $c->parent_id, $c->icon);
             }

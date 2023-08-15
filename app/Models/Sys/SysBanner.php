@@ -31,7 +31,6 @@ class SysBanner extends Model{
     public static function site_array(){
         return [
             '首页',
-            '测试页',
         ];
     }
 }

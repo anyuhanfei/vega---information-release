@@ -65,6 +65,7 @@ Route::group([
     $router->post('user/credit', [\App\Api\Controllers\UserController::class, 'credit']);
 
     // 活动
+    $router->post('release/price', [\App\Api\Controllers\SysController::class, 'release_price']);
     $router->post('event/category', [\App\Api\Controllers\EventController::class, 'event_category']);
     $router->post('event/create', [\App\Api\Controllers\EventController::class, 'event_create']);
     $router->post('event/update', [\App\Api\Controllers\EventController::class, 'event_update']);

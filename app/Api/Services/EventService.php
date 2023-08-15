@@ -4,6 +4,7 @@ namespace App\Api\Services;
 use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\Events\EventCategoryRepository;
 use App\Api\Repositories\Events\EventOrderRepository;
+use App\Api\Repositories\Idx\IdxSettingRepository;
 use App\Api\Repositories\Sys\SysSettingRepository;
 use App\Api\Repositories\User\UsersRepository;
 
@@ -38,7 +39,7 @@ class EventService{
         $two_level_category_id = $category->id;
         // 创建活动
         $data = (new EventsRepository())->create_data($user_id, $params['event_type'], $params['title'], $params['sex_limit'], $params['charge_type'], $params['award_content'], $params['site_address'], $params['site_longitude'], $params['site_latitude'], $params['start_time'], $params['end_time'], $one_level_category_id, $two_level_category_id, $params['require_content'], $params['image'], $params['video'], $params['service_phone'], $params['information_of_registration_key']);
-        $price = (new SysSettingRepository())->use_id_get_value(33);
+        $price = (new SysService())->get_release_price($user_id);
         // 支付
         // $pay_data = (new PayService())->pay($pay_method, $user_id, $price, $data->id, '发布活动', '发布活动');
         // 测试阶段直接支付成功
@@ -189,7 +190,7 @@ class EventService{
             'status'=> $event->status,
             'is_apply'=> $is_apply,
             'price'=> $price,
-            'information_of_registration_key'=> comma_str_to_array($event->information_of_registration_key),
+            'information_of_registration_key'=> (new IdxSettingRepository())->get_information_of_registration_key_details(comma_str_to_array($event->information_of_registration_key)),
         ];
     }
 
