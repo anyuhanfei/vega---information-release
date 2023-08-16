@@ -1,7 +1,10 @@
 <?php
-namespace App\Api\Requests;
+namespace App\Api\Requests\Events;
 
 use Illuminate\Validation\Rule;
+
+use App\Api\Requests\BaseRequest;
+
 
 class UserOrdersRequest extends BaseRequest{
     public function authorize(){

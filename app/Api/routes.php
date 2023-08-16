@@ -80,6 +80,9 @@ Route::group([
     // 活动订单
     $router->post('event/order/create', [\App\Api\Controllers\EventOrderController::class, 'order_create']);
     $router->post('event/order/list', [\App\Api\Controllers\EventOrderController::class, 'event_orders']);
+    $router->post('event/order/audit', [\App\Api\Controllers\EventOrderController::class, 'event_order_audit']);
+    $router->post('event/other/order', [\App\Api\Controllers\EventOrderController::class, 'other_orders']);
+    $router->post('event/user/order', [\App\Api\Controllers\EventOrderController::class, 'user_orders']);
 
 });
 

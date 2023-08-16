@@ -138,6 +138,12 @@ class EventsController extends AdminController
                 if($form->status == 20){
                     // 将活动加入位置集合
                     (new \App\Api\Repositories\Events\EventsRepository())->add_geo($form->repository()->model()->id, $form->repository()->model()->site_longitude, $form->repository()->model()->site_latitude);
+                    // 根据活动的举办时间，到时间将活动状态改为进行中（包含活动的订单）
+                    $时间 = intval((strtotime($form->repository()->model()->start_time) - time()) / 60);
+                    \App\Jobs\EventStatus30::dispatch($form->repository()->model()->id)->delay(now()->addMinutes($时间));
+                    // 根据活动的到期时间，到时间将活动状态改为已完成（包含活动的订单）
+                    $时间 = intval((strtotime($form->repository()->model()->end_time) - time()) / 60);
+                    \App\Jobs\EventStatus30::dispatch($form->repository()->model()->id)->delay(now()->addMinutes($时间));
                 }
             });
         });

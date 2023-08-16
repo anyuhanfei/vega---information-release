@@ -5,6 +5,7 @@
 
 const SUCCESS_CODE = 200;
 const ERROR_CODE = 500;
+const LOGIN_ERROR_CODE = 401;
 
 /**
  * 返回异常回调信息
@@ -15,6 +16,16 @@ const ERROR_CODE = 500;
  */
 function error(string $msg, array|Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model $data = []){
     return return_data(ERROR_CODE, $msg, $data);
+}
+
+/**
+ * 未登录接口返回未登录报错
+ *
+ * @param string $msg
+ * @return void
+ */
+function login_error(string $msg){
+    return return_data(LOGIN_ERROR_CODE, $msg, []);
 }
 
 /**

@@ -140,4 +140,17 @@ class EventsRepository{
             return date("m.d H:i", $start_time) . '-' . date("m.d H:i", $end_time);
         }
     }
+
+    /**
+     * 修改活动状态
+     *
+     * @param integer $event_id
+     * @param integer $status
+     * @return void
+     */
+    public function update_event_status(int $event_id, int $status){
+        return $this->eloquentClass::id($event_id)->update([
+            'status'=> $status,
+        ]);
+    }
 }

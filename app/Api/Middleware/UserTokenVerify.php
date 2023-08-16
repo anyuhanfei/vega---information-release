@@ -16,12 +16,12 @@ class UserTokenVerify{
      */
     public function handle($request, Closure $next){
         if(!$request->hasHeader('token')){
-            return error('请先登录');
+            return login_error('请先登录');
         }
         $UsersRepository = new UsersRepository();
         $user_id = $UsersRepository->use_token_get_id($request->header('token'));
         if($user_id == 0){
-            return error('请先登录');
+            return login_error('请先登录');
         }
         $request->merge(['user_id' => $user_id]);
         return $next($request);

@@ -110,9 +110,10 @@ class EventOrderService{
                 'event_title'=> $v->event->title,
                 'event_address'=> $v->event->site_address,
                 'event_image'=> $v->event->image,
+                'publisher_id'=> $v->publisher_id,
                 'publisher_nickname'=> $v->publisher->nickname,
                 'publisher_avatar'=> $v->publisher->avatar,
-                'event_start_time'=> date("m月d日", $v->event->start_time),
+                'event_start_time'=> date("m月d日", strtotime($v->event->start_time)),
                 'user_number'=> $user_number,
                 'user_avatars'=> $user_avatars,
             ];
@@ -128,7 +129,7 @@ class EventOrderService{
             '进行中'=> [30],
             '待评价'=> [40],
             '已完成'=> [50],
-        ];
+        ][$status];
         $list = (new EventOrderRepository())->use_status_get_user_over_orders($user_id, $status, $page, $limit);
         $coordinate = (new UsersRepository())->get_user_coordinate($user_id);
         $data = [];
@@ -137,7 +138,7 @@ class EventOrderService{
             $data[] = [
                 'order_no'=> $v->order_no,
                 'distance'=> get_distance($coordinate['longitude'], $coordinate['latitude'], $v->site_longitude, $v->site_latitude),
-                'time'=> (new EventsRepository())->整理时间数据($v->start_time, $v->end_time),
+                'time'=> (new EventsRepository())->整理时间数据($v->event->start_time, $v->event->end_time),
                 'publisher_avatar'=> $v->publisher->avatar,
                 'publisher_nickname'=> $v->publisher->nickname,
                 'event_image'=> $v->event->image,
@@ -147,5 +148,6 @@ class EventOrderService{
                 'user_avatars'=> $user_avatars,
             ];
         }
+        return $data;
     }
 }

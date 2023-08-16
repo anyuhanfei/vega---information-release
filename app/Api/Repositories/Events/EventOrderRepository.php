@@ -97,6 +97,18 @@ class EventOrderRepository{
         }
     }
 
+    public function use_event_id_update_status_20_to_30(int $event_id){
+        return $this->eloquentClass::eventId($event_id)->status(20)->update([
+            'status'=> 30,
+        ]);
+    }
+
+    public function use_event_id_update_status_30_to_40(int $event_id){
+        return $this->eloquentClass::eventId($event_id)->status(30)->update([
+            'status'=> 40,
+        ]);
+    }
+
     /**
      * 取消订单操作
      *
@@ -139,11 +151,9 @@ class EventOrderRepository{
      * @param integer $limit
      * @return void
      */
-    public function use_status_get_user_over_orders(int $user_id, int|array $status, int $page = 1, int $limit = 10){
-        if(is_int($status)){
-            $status = [$status];
-        }
-        return $this->eloquentClass::with([['event', 'publisher']])->userId($user_id)->page($page, $limit)->status($status)->orderBy("created_at", 'desc')->get();
+    public function use_status_get_user_over_orders(int $user_id, array $status, int $page = 1, int $limit = 10){
+        return $this->eloquentClass::with(['event', 'publisher'])->userId($user_id)->page($page, $limit)->status($status)->orderBy("created_at", 'desc')->get();
     }
+
 }
 

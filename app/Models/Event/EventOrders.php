@@ -82,7 +82,7 @@ class EventOrders extends Model{
         return $builder->where("publisher_id", $value);
     }
 
-    public function scopeInformation(Builder $builder, int $value){
+    public function scopeInformation(Builder $builder, string $value){
         return $builder->where("information_of_registration_value", 'like', '%'.$value.'%');
     }
 

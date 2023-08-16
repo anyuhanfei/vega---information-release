@@ -66,7 +66,7 @@ class EventOrderController extends BaseController{
         return success("他人的订单", $data);
     }
 
-    public function user_orders(Request $request){
+    public function user_orders(\App\Api\Requests\Events\UserOrdersRequest $request){
         $status = $request->input('status');
         $page = $request->input("page");
         $limit = $request->input("limit");
