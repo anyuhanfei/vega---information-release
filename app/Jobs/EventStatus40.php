@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\Log\LogSysMessageRepository;
+use App\Api\Repositories\User\UserFundsRepository;
 
 class EventStatus40 implements ShouldQueue{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -35,12 +36,16 @@ class EventStatus40 implements ShouldQueue{
             (new EventOrderRepository())->use_event_id_update_status_30_to_40($this->event_id);
             // 发送通知
             $user_ids = [];
+            $pay_money = 0;
             foreach($orders as $order){
                 $user_ids[] = $order->user_id;
+                $pay_money += $order->pay_price;
             }
             if(count($user_ids) > 0){
                 (new LogSysMessageRepository())->send_message("活动结束通知", implode(',', $user_ids), '', "您参与的活动已结束，您可以进入订单列表对活动进行评价!");
             }
+            // 将活动订单支付的金额添加到举办者余额
+            (new UserFundsRepository())->update_fund($event->user_id, 'money', $pay_money, '活动结束', '活动结束结算报名费');
         }
     }
 }

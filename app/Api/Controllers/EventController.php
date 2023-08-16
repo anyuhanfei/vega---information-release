@@ -81,7 +81,7 @@ class EventController extends BaseController{
         $params['video'] = $request->input("video");
         $params['service_phone'] = $request->input("service_phone");
         $params['information_of_registration_key'] = $request->input("information_of_registration_key");
-        $pay_data = $this->service->update_event_operation($this->user_id, $event_id, $params);
+        $this->service->update_event_operation($this->user_id, $event_id, $params);
         return success("修改活动成功，请等待审核");
     }
 

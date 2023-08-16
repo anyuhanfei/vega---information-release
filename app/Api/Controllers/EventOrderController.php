@@ -33,7 +33,7 @@ class EventOrderController extends BaseController{
     }
 
     /**
-     * 获取服务的全部订单
+     * 获取服务的全部订单(用户的基本信息)
      *
      * @param \App\Api\Requests\Events\EventOrdersRequest $request
      * @return void
@@ -55,9 +55,15 @@ class EventOrderController extends BaseController{
         $order_no = $request->input('order_no');
         $status = $request->input('status');
         $res = $this->service->audit_order_operation($this->user_id, $order_no, $status);
-        return success("审核订单", $order_no);
+        return success("审核订单完成");
     }
 
+    /**
+     * 他人参与的活动列表
+     *
+     * @param \App\Api\Requests\PageRequest $request
+     * @return void
+     */
     public function other_orders(\App\Api\Requests\PageRequest $request){
         $other_id = $request->input("other_id");
         $page = $request->input("page");
@@ -66,12 +72,28 @@ class EventOrderController extends BaseController{
         return success("他人的订单", $data);
     }
 
+    /**
+     * 自己参与的活动列表
+     *
+     * @param \App\Api\Requests\Events\UserOrdersRequest $request
+     * @return void
+     */
     public function user_orders(\App\Api\Requests\Events\UserOrdersRequest $request){
         $status = $request->input('status');
         $page = $request->input("page");
         $limit = $request->input("limit");
         $data = $this->service->get_user_orders($this->user_id, $status, $page, $limit);
         return success("我的订单", $data);
+    }
+
+    /**
+     * 自己参与的活动的详情
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function user_order_detail(Request $request){
+
     }
 
 }

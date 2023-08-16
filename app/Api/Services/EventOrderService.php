@@ -3,6 +3,7 @@ namespace App\Api\Services;
 
 use App\Api\Repositories\Events\EventOrderRepository;
 use App\Api\Repositories\Events\EventsRepository;
+use App\Api\Repositories\Log\LogSysMessageRepository;
 use App\Api\Repositories\Sys\SysSettingRepository;
 use App\Api\Repositories\User\UsersRepository;
 
@@ -78,16 +79,24 @@ class EventOrderService{
     /**
      * 审核订单操作
      */
-    public function audit_order_operation(int $user_id, string $order_no, int $status){
+    public function audit_order_operation(int $user_id, string $order_no, string $status){
         $order = (new EventOrderRepository())->use_order_no_get_one_data($order_no);
         if(!$order || $order->publisher_id != $user_id){
             throwBusinessException("无权限操作此订单");
         }
+        if($order->status != 10){
+            throwBusinessException("订单已审核");
+        }
         if($status == '拒绝'){
             (new EventOrderRepository())->use_order_no_update_status($order_no, 19);
             //TODO：：退款
+
+            // 通知会员订单拒绝
+            (new LogSysMessageRepository())->send_message("订单申请已拒绝", $order->user_id, '', '您的参加活动申请已被拒绝，报名费用已全额退款');
         }else{
             (new EventOrderRepository())->use_order_no_update_status($order_no, 20);
+            // 通知会员订单通过
+            (new LogSysMessageRepository())->send_message("订单申请已通过", $order->user_id, '', "您的参加活动申请已通过，请按时参加活动");
         }
         return true;
     }

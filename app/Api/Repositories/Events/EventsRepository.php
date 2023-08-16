@@ -54,7 +54,7 @@ class EventsRepository{
             'video' => $video,
             'service_phone' => $service_phone,
             'information_of_registration_key' => $information_of_registration_key,
-            'status'=> 0
+            'status'=> 10
         ]);
     }
 
@@ -91,7 +91,9 @@ class EventsRepository{
      * @return void
      */
     public function use_search_get_list(array $where, int $page = 1, int $limit = 100){
-        return $this->eloquentClass::with(['user'])->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude', 'reject_cause'])->get();
+        $ids = $where['id'];
+        unset($where['id']);
+        return $this->eloquentClass::with(['user'])->id($ids)->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude', 'reject_cause'])->get();
     }
 
     /**

@@ -40,8 +40,12 @@ class EventService{
         // 创建活动
         $data = (new EventsRepository())->create_data($user_id, $params['event_type'], $params['title'], $params['sex_limit'], $params['charge_type'], $params['award_content'], $params['site_address'], $params['site_longitude'], $params['site_latitude'], $params['start_time'], $params['end_time'], $one_level_category_id, $two_level_category_id, $params['require_content'], $params['image'], $params['video'], $params['service_phone'], $params['information_of_registration_key']);
         $price = (new SysService())->get_release_price($user_id);
-        // 支付
-        // $pay_data = (new PayService())->pay($pay_method, $user_id, $price, $data->id, '发布活动', '发布活动');
+        // if($price > 0){
+        //     // 支付
+        //     $pay_data = (new PayService())->pay($pay_method, $user_id, $price, $data->id, '发布活动', '发布活动');
+        // }else{
+        //     $pay_data = (new PayService())->发布活动($data->id, $price);
+        // }
         // 测试阶段直接支付成功
         $pay_data = (new PayService())->发布活动($data->id, $price);
         return $pay_data;
