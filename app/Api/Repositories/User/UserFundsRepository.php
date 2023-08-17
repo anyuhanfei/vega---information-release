@@ -46,4 +46,15 @@ class UserFundsRepository{
         $res_two = $LogUserFundRepository->created_data($user_id, $coin_type, $money, $fund_type, $content, $remark);
         return $res_one && $res_two;
     }
+
+    /**
+     * 获取会员的某项资产
+     *
+     * @param integer $user_id
+     * @param string $field
+     * @return void
+     */
+    public function get_user_fund(int $user_id, string $field){
+        return $this->eloquentClass::where("id", $user_id)->value($field) ?? 0;
+    }
 }

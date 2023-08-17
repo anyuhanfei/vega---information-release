@@ -25,7 +25,7 @@ class EventCreateRequest extends BaseRequest{
             'site_address'=> ['required'],
             'site_longitude'=> ['required'],
             'site_latitude'=> ['required'],
-            'start_time'=> ['required', 'date', "after:tomorrow"],
+            'start_time'=> ['required', 'date', "after:today"],
             'end_time'=> ['required', 'date', "after:start_time"],
             'category_id'=> ['required', new \App\Api\Rules\Events\EventCategoryVerify()],
             'require_content'=> ['required'],

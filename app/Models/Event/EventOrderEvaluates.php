@@ -15,13 +15,16 @@ use App\Models\BaseFilter;
  */
 class EventOrderEvaluates extends Model{
 	use HasDateTimeFormatter;
-    use SoftDeletes;
     use BaseFilter;
 
     protected $guarded = [];
 
     public function is_anonymity_array(){
         return ['非匿名', '匿名'];
+    }
+
+    public function score_array(){
+        return ["✩✩✩✩✩", "✭✩✩✩✩", "✭✭✩✩✩", "✭✭✭✩✩", "✭✭✭✭✩", "✭✭✭✭✭"];
     }
 
     protected function tags_text(): Attribute{
@@ -38,7 +41,7 @@ class EventOrderEvaluates extends Model{
      * @return void
      */
     public function user(){
-        return $this->hasOne(\App\Models\User\Users::class, "user_id", 'id');
+        return $this->hasOne(\App\Models\User\Users::class, "id", 'user_id');
     }
 
     /**
@@ -47,7 +50,7 @@ class EventOrderEvaluates extends Model{
      * @return void
      */
     public function event(){
-        return $this->hasOne(\App\Models\Event\Events::class, "event_id", 'id');
+        return $this->hasOne(\App\Models\Event\Events::class, "id", 'event_id');
     }
 
     /**
@@ -56,7 +59,7 @@ class EventOrderEvaluates extends Model{
      * @return void
      */
     public function publisher(){
-        return $this->hasOne(\App\Models\User\Users::class, 'publisher_id', 'id');
+        return $this->hasOne(\App\Models\User\Users::class, 'id', 'publisher_id');
     }
 
 

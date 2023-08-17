@@ -20,12 +20,21 @@ class EventsController extends AdminController
     {
         return Grid::make(new Events(['user', 'one_level_category', 'two_level_category']), function (Grid $grid) {
             $grid->column('id')->sortable();
+            $grid->model()->orderBy('id', 'desc');
             $grid->column('user_id', '会员信息')->width('200px')->display(function(){
-                return '<img data-action="preview-img" src="' . $this->user->avatar . '" style="max-width:60px;cursor:pointer;float:left;" class="img img-thumbnail"><p style="padding-top:3px;">&nbsp;ID: ' . $this->user_id . '</p><p >&nbsp;昵称: ' . $this->user->nickname . '</p>';
+                try{
+                    return '<img data-action="preview-img" src="' . $this->user->avatar . '" style="max-width:60px;cursor:pointer;float:left;" class="img img-thumbnail"><p style="padding-top:3px;">&nbsp;ID: ' . $this->user_id . '</p><p >&nbsp;昵称: ' . $this->user->nickname . '</p>';
+                }catch(\Exception $e){
+                    return "账号已注销";
+                }
             });
             $grid->column('title', '活动信息')->width("400px")->display(function(){
-                $sex_limit = $this->sex_limit == '全部' ? '' : ('<span class="label" style="background:#586cb1">限' . $this->sex_limit . '性</span>&nbsp;');
-                return '<img data-action="preview-img" src="' . $this->image . '" style="max-width:140px;max-height:140px;cursor:pointer;float:left;" class="img img-thumbnail"><h5 style="padding-top:7px;">&nbsp;' . $this->title . '</h5><span class="label" style="background:#586cb1">' . $this->event_type . '</span>&nbsp;' . $sex_limit . '<span class="label" style="background:#586cb1">' . $this->one_level_category->name . '-' . $this->two_level_category->name . '</span>&nbsp;<span class="label" style="background:#586cb1">' . $this->charge_type . '</span>&nbsp;<br/><br/><span style="padding-top:14px;">需填写: ' . $this->information_of_registration_key . '</span>';
+                try{
+                    $sex_limit = $this->sex_limit == '全部' ? '' : ('<span class="label" style="background:#586cb1">限' . $this->sex_limit . '性</span>&nbsp;');
+                    return '<img data-action="preview-img" src="' . $this->image . '" style="max-width:140px;max-height:140px;cursor:pointer;float:left;" class="img img-thumbnail"><h5 style="padding-top:7px;">&nbsp;' . $this->title . '</h5><span class="label" style="background:#586cb1">' . $this->event_type . '</span>&nbsp;' . $sex_limit . '<span class="label" style="background:#586cb1">' . $this->one_level_category->name . '-' . $this->two_level_category->name . '</span>&nbsp;<span class="label" style="background:#586cb1">' . $this->charge_type . '</span>&nbsp;<br/><br/><span style="padding-top:14px;">需填写: ' . $this->information_of_registration_key . '</span>';
+                }catch(\Exception $e){
+                    return "活动已删除";
+                }
             });
             $grid->column('service_phone', '举办人手机号');
             $grid->column('site_address');
@@ -143,7 +152,7 @@ class EventsController extends AdminController
                     \App\Jobs\EventStatus30::dispatch($form->repository()->model()->id)->delay(now()->addMinutes($时间));
                     // 根据活动的到期时间，到时间将活动状态改为已完成（包含活动的订单）
                     $时间 = intval((strtotime($form->repository()->model()->end_time) - time()) / 60);
-                    \App\Jobs\EventStatus30::dispatch($form->repository()->model()->id)->delay(now()->addMinutes($时间));
+                    \App\Jobs\EventStatus40::dispatch($form->repository()->model()->id)->delay(now()->addMinutes($时间));
                 }
             });
         });

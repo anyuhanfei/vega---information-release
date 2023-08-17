@@ -17,7 +17,7 @@ class UserAlbum extends Model{
     protected $table = "user_album";
 
     public function user(){
-        return $this->hasOne(\App\Models\User\UserAlbum::class, 'id', 'user_id');
+        return $this->hasOne(\App\Models\User\Users::class, 'id', 'user_id');
     }
 
     public function scopeId(Builder $builder, int $value){

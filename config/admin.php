@@ -431,15 +431,15 @@ return [
         // 文章标签中的图片字段是否使用
         'tag_image_show'=> false,
         // 标签字段是否使用，标签模块使用使用
-        'tag_show'=> true,
+        'tag_show'=> false,
         // 作者字段是否使用
-        'author_show'=> true,
+        'author_show'=> false,
         // 简介字段是否使用
-        'intro_show'=> true,
+        'intro_show'=> false,
         // 关键字字段是否使用
-        'keyword_show'=> true,
+        'keyword_show'=> false,
         // 图片字段是否使用
-        'image_show'=> true
+        'image_show'=> false
     ],
 
     /*

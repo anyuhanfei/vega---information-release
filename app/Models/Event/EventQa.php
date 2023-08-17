@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\BaseFilter;
+use Dcat\Admin\Traits\ModelTree;
 
 
 /**
@@ -16,9 +17,13 @@ class EventQa extends Model{
 	use HasDateTimeFormatter;
     use SoftDeletes;
     use BaseFilter;
+    use ModelTree;
 
     protected $table = 'event_qa';
+    protected $titleColumn = 'content';
+    protected $parentColumn = 'question_id';
     protected $guarded = [];
+
 
     /*------------------------关联----------------------------------------*/
     /**

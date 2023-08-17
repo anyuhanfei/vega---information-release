@@ -93,7 +93,50 @@ class EventOrderController extends BaseController{
      * @return void
      */
     public function user_order_detail(Request $request){
-
+        $order_no = $request->input("order_no" ?? '') ?? '';
+        $data = $this->service->get_user_order_detail($this->user_id, $order_no);
+        return success("我的订单详情", $data);
     }
 
+    /**
+     * 会员取消参加活动的订单
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function user_order_cancel(Request $request){
+        $order_no = $request->input("order_no" ?? '') ?? '';
+        $res = $this->service->cancel_user_order_operation($this->user_id, $order_no);
+        return success("取消成功");
+    }
+
+    /**
+     * 会员评价订单
+     *
+     * @param \App\Api\Requests\Events\UserOrderEvaluateRequest $request
+     * @return void
+     */
+    public function user_order_evaluate(\App\Api\Requests\Events\UserOrderEvaluateRequest $request){
+        $order_no = $request->input("order_no");
+        $score = $request->input("score");
+        $tags = $request->input("tags" ?? '') ?? '';
+        $res = $this->service->evaluate_user_order_operation($this->user_id, $order_no, $score, $tags);
+        return success("评价成功");
+    }
+
+    /**
+     * 会员提交意见反馈
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function user_order_feedback(\App\Api\Requests\Events\UserOrderFeedbackRequest $request){
+        $order_no = $request->input('order_no');
+        $title = $request->input("title");
+        $content = $request->input("content");
+        $images = $request->input("images" ?? '') ?? '';
+        $video = $request->input("video" ?? '') ?? '';
+        $res = $this->service->feedback_user_order_operation($this->user_id, $order_no, $title, $content, $images, $video);
+        return success("提交成功");
+    }
 }

@@ -155,5 +155,17 @@ class EventOrderRepository{
         return $this->eloquentClass::with(['event', 'publisher'])->userId($user_id)->page($page, $limit)->status($status)->orderBy("created_at", 'desc')->get();
     }
 
+    /**
+     * 评价
+     *
+     * @param string $order_no
+     * @return void
+     */
+    public function evaluate_order_operation(string $order_no){
+        return $this->eloquentClass::orderNo($order_no)->update([
+            'status'=> 50
+        ]);
+    }
+
 }
 

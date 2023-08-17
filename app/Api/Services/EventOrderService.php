@@ -1,11 +1,14 @@
 <?php
 namespace App\Api\Services;
 
+use App\Api\Repositories\Events\EventOrderEvaluateRepository;
 use App\Api\Repositories\Events\EventOrderRepository;
 use App\Api\Repositories\Events\EventsRepository;
+use App\Api\Repositories\Log\LogFeedbackRepository;
 use App\Api\Repositories\Log\LogSysMessageRepository;
 use App\Api\Repositories\Sys\SysSettingRepository;
 use App\Api\Repositories\User\UsersRepository;
+use App\Api\Repositories\User\UserTagsRepository;
 
 class EventOrderService{
 
@@ -158,5 +161,107 @@ class EventOrderService{
             ];
         }
         return $data;
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param integer $user_id
+     * @param string $order_no
+     * @return void
+     */
+    public function get_user_order_detail(int $user_id, string $order_no){
+        $order = (new EventOrderRepository())->use_order_no_get_one_data($order_no);
+        if(!$order || $order->user_id != $user_id){
+            throwBusinessException("订单不存在");
+        }
+        $coordinate = (new UsersRepository())->get_user_coordinate($user_id);
+        return [
+            'order_no'=> $order->order_no,
+            'distance'=> get_distance($coordinate['longitude'], $coordinate['latitude'], $order->site_longitude, $order->site_latitude),
+            'time'=> (new EventsRepository())->整理时间数据($order->event->start_time, $order->event->end_time),
+            'publisher_avatar'=> $order->publisher->avatar,
+            'publisher_nickname'=> $order->publisher->nickname,
+            'event_image'=> $order->event->image,
+            'event_title'=> $order->event->title,
+            'status'=> $order->status,
+            'created_at'=> $order->created_at,
+            'all_price'=> $order->all_price,
+            'number'=> $order->number,
+        ];
+    }
+
+    /**
+     * 用户取消报名订单
+     *
+     * @param integer $user_id
+     * @param string $order_no
+     * @return void
+     */
+    public function cancel_user_order_operation(int $user_id, string $order_no){
+        $order = (new EventOrderRepository())->use_order_no_get_one_data($order_no);
+        if(!$order || $order->user_id != $user_id){
+            throwBusinessException("订单不存在");
+        }
+        if($order->status == -1){
+            throwBusinessException("当前订单已取消");
+        }
+        if($order->status != 0 && $order->status != 10 && $order->status != 20){
+            throwBusinessException("当前订单已无法取消");
+        }
+        // 取消订单
+        $res = (new EventOrderRepository())->cancel_order('', $order);
+        return true;
+    }
+
+    public function evaluate_user_order_operation(int $user_id, string $order_no, int $score, string $tags){
+        $order = (new EventOrderRepository())->use_order_no_get_one_data($order_no);
+        if(!$order || $order->user_id != $user_id){
+            throwBusinessException("订单不存在");
+        }
+        if($order->status != 40){
+            throwBusinessException("当前订单不是待评价状态");
+        }
+        // 添加评价记录
+        (new EventOrderEvaluateRepository())->create_data($user_id, $order_no, $order->event_id, $order->publisher_id, $score, $tags);
+        // 修改订单状态
+        (new EventOrderRepository())->evaluate_order_operation($order_no);
+        // 添加会员标签
+        $tags = comma_str_to_array($tags);
+        if(count($tags) > 0){
+            $user_tags = (new UserTagsRepository())->get_user_all_tags($order->publisher_id);
+            foreach($tags as $tag){
+                $res = false;
+                foreach($user_tags as $user_tag){
+                    if($user_tag->type == '他人评价' && $tag == $user_tag->tag){
+                        // 点赞并添加记录
+                        (new UserTagsRepository())->set_like_status($user_id, $tag->id);
+                        $res = true;
+                        break;
+                    }
+                }
+                if($res == false){
+                    // 没有人选择这个标签，添加标签
+                    (new UserTagsRepository())->create_data($order->publisher_id, '他人评价', $tag);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 意见反馈提交
+     *
+     * @param integer $user_id
+     * @param string $order_no
+     * @param string $title
+     * @param string $content
+     * @param string $images
+     * @param string $video
+     * @return void
+     */
+    public function feedback_user_order_operation(int $user_id, string $order_no, string $title, string $content, string $images, string $video){
+        $res = (new LogFeedbackRepository())->create_data($user_id, $order_no, $title, $content, $images, $video);
+        return true;
     }
 }

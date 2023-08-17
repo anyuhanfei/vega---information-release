@@ -83,6 +83,9 @@ Route::group([
     $router->post('event/order/audit', [\App\Api\Controllers\EventOrderController::class, 'event_order_audit']);
     $router->post('event/other/order', [\App\Api\Controllers\EventOrderController::class, 'other_orders']);
     $router->post('event/user/order', [\App\Api\Controllers\EventOrderController::class, 'user_orders']);
+    $router->post('event/user/order/cancel', [\App\Api\Controllers\EventOrderController::class, 'user_order_cancel']);
+    $router->post('event/user/order/evaluate', [\App\Api\Controllers\EventOrderController::class, 'user_order_evaluate']);
+    $router->post('event/user/order/feedback', [\App\Api\Controllers\EventOrderController::class, 'user_order_feedback']);
 
 });
 

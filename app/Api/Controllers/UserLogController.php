@@ -67,4 +67,30 @@ class UserLogController extends BaseController{
         $data = $this->service->get_sys_message_detail($this->user_id, $id);
         return success('系统消息', $data);
     }
+
+    /**
+     * 提现操作
+     *
+     * @param \App\Api\Requests\User\WithdrawRequest $request
+     * @return void
+     */
+    public function withdraw(\App\Api\Requests\User\WithdrawRequest $request){
+        $money = $request->input('money', 0) ?? 0;
+        $type = $request->input('type');
+        $res = $this->service->user_withdraw_operation($this->user_id, $type, $money);
+        return success("提现申请成功");
+    }
+
+    /**
+     * 提现记录
+     *
+     * @param \App\Api\Requests\PageRequest $request
+     * @return void
+     */
+    public function withdraw_log(\App\Api\Requests\PageRequest $request){
+        $page = $request->input('page', 1);
+        $limit = $request->input('limit', 10);
+        $data = $this->service->user_withdraw_log($this->user_id, $page, $limit);
+        return success("提现记录", $data);
+    }
 }

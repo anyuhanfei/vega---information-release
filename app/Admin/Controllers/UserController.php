@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 use App\Admin\Repositories\User;
-
+use App\Admin\Repositories\User\UserTag;
 use App\Api\Repositories\User\UsersRepository;
-
+use App\Api\Repositories\User\UserTagsRepository;
 use App\Models\Log\LogUserOperation;
 use App\Models\Log\LogUserFund;
 
@@ -100,53 +100,39 @@ class UserController extends BaseController{
      * @return Show
      */
     protected function detail($id){
-        return Show::make($id, new User(['log_operation', 'detail']), function (Show $show) use($id){
-            $show->row(function (Show\Row $show) {
-                $show->width(5)->id;
-                $show->width(4)->avatar->image('', 40, 40);
+        return Show::make($id, new User(['detail']), function (Show $show){
+            $show->field('id');
+            $show->field('nickname');
+            $show->field("avatar")->image("", 80, 80);
+            $show->field("phone");
+            $show->field("sex", '性别');
+            $show->field("identity", '身份');
+            $show->field("bio", '个人介绍');
+            $show->field("age", '年龄');
+            $show->field("vip");
+            $show->field("vip_expriation_time", 'VIP到期时间');
+            $show->field("background", '背景图片/视频');
+            $show->field("shop_name", '商家名称');
+            $show->field("shop_year", '商家年份');
+            $show->field("shop_business", '商家业务');
+            $show->relation('会员标签管理', function ($model) {
+                $grid = new Grid(new UserTag());
+                $grid->setResource('user/tag');
+                $grid->model()->where('user_id', $model->id);
+                $grid->id();
+                $grid->tag('标签');
+                $grid->type('类型');
+                $grid->column("like", '点赞数')->display(function(){
+                    return (new UserTagsRepository())->get_like_number($this->id);
+                });
+                $grid->disableRefreshButton();
+                $grid->disableFilterButton();
+                $grid->disableCreateButton();
+                $grid->disableRowSelector();
+                $grid->disableEditButton();
+                $grid->disableViewButton();
+                return $grid;
             });
-            $show->row(function (Show\Row $show) {
-                foreach (config('admin.users.user_identity') as $field) {
-                    $show->width(5)->$field;
-                }
-                $show->width(4)->nickname;
-            });
-
-            $show->row(function (Show\Row $show) {
-                $show->width(6)->field('detail.id_card_username', '真实姓名');
-                $show->width(6)->field('detail.id_card_code', '身份证号');
-            });
-            // $show->relation('会员操作记录', function ($model) {
-            //     $grid = new Grid(new LogUserOperation);
-            //     $grid->model()->where('uid', $model->id);
-            //     $grid->id()->width('15%');
-            //     $grid->content('操作')->width('40%');
-            //     $grid->ip()->width('15%');;
-            //     $grid->created_at();
-            //     $grid->disableRefreshButton();
-            //     $grid->disableFilterButton();
-            //     $grid->disableCreateButton();
-            //     $grid->disableRowSelector();
-            //     $grid->disableActions();
-            //     return $grid;
-            // });
-            // $show->relation('会员资产记录', function ($model) {
-            //     $grid = new Grid(new LogUserFund);
-            //     $grid->model()->where('uid', $model->id);
-            //     $grid->id()->width("10%");
-            //     $grid->column('number', '金额')->width("10%");
-            //     $grid->column('coin_type', '资金类型')->width("10%");
-            //     $grid->column('fund_type', '操作类型')->width("10%");
-            //     $grid->column('content', '详细说明')->width("20%");
-            //     $grid->column('remark', '备注')->width('15%');
-            //     $grid->column('created_at');
-            //     $grid->disableRefreshButton();
-            //     $grid->disableFilterButton();
-            //     $grid->disableCreateButton();
-            //     $grid->disableRowSelector();
-            //     $grid->disableActions();
-            //     return $grid;
-            // });
         });
     }
 
@@ -163,8 +149,8 @@ class UserController extends BaseController{
                     $form->text($field)->required();
                 }
                 config('admin.users.nickname_show') ? $form->text('nickname')->required() : '';
-                $form->select("sex", '性别')->options(['男'=> "男", '女'=> '女']);
-                $form->select("identity", "身份")->options(['个人'=> "个人", '商家'=> "商家"])->when('=', '商家', function(Form $form){
+                $form->select("sex", '性别')->options(['男'=> "男", '女'=> '女'])->required();
+                $form->select("identity", "身份")->options(['个人'=> "个人", '商家'=> "商家"])->required()->when('=', '商家', function(Form $form){
                     $form->text("detail.shop_name", '商家名称');
                     $form->text("detail.shop_year", '商家年份');
                     $form->text("detail.shop_business", '商家业务');
@@ -194,9 +180,17 @@ class UserController extends BaseController{
                     $form->display('id');
                     config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload()->uniqueName()->saveFullUrl()->required()->removable(false)->retainable() : '';
                     foreach(config('admin.users.user_identity') as $field){
-                        $form->text($field);
+                        $form->text($field)->required();
                     }
-                    config('admin.users.nickname_show') ? $form->text('nickname') : '';
+                    config('admin.users.nickname_show') ? $form->text('nickname')->required() : '';
+                    $form->select("sex", '性别')->options(['男'=> "男", '女'=> '女'])->required();
+                    $form->select("identity", "身份")->options(['个人'=> "个人", '商家'=> "商家"])->required()->when('=', '商家', function(Form $form){
+                        $form->text("detail.shop_name", '商家名称');
+                        $form->text("detail.shop_year", '商家年份');
+                        $form->text("detail.shop_business", '商家业务');
+                    });
+                    $form->number("age", '年龄')->required();
+                    $form->text("bio", '个人介绍')->required();
                 });
                 $form->tab('密码', function(Form $form){
                     $form->text('password')->customFormat(function(){

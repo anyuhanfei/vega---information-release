@@ -161,12 +161,7 @@ class SysService{
         if(!$data){
             throwBusinessException('文章不存在');
         }
-        // 关键词，分类数据、标签数据
-        $data->keyword = comma_str_to_array($data->keyword);
-        $tag_ids = json_decode($data->tag_ids);
-        $data->tags = (new ArticleTagRepository())->use_ids_get_datas($tag_ids);
-        unset($data->category_id, $data->tag_ids);
-        return $data;
+        return ['content'=> $data->content];
     }
 
 

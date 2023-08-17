@@ -53,4 +53,8 @@ class LogUserFundRepository{
             'remark' => $remark,
         ]);
     }
+
+    public function use_fund_type_get_list(int $user_id, string $fund_type, int $page, int $limit){
+        return $this->eloquentClass::userId($user_id)->fundType($fund_type)->page($page, $limit)->get();
+    }
 }

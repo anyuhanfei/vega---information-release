@@ -63,6 +63,8 @@ class UserService{
                 'money'=> $is_me ? $user->funds->money : 0,
                 'credit'=> $user->funds->credit,
             ],
+            'vip'=> $user->vip,
+            'vip_expriation_time'=> $user->vip_expriation_time,
         ];
     }
 

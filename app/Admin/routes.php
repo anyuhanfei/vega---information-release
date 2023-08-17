@@ -14,7 +14,10 @@ Route::group([
 
     $router->get('/', 'HomeController@index');
     $router->resource('users', 'UserController');
+    $router->resource('user/album', 'User\UserAlbumController');
+    $router->resource('user/tag', 'User\UserTagController');
     $router->get("get/users", "UserController@get_users");
+
     $router->resource('article/category', 'Article\ArticleCategoryController');
     $router->resource('article/tag', 'Article\ArticleTagController');
     $router->resource('article', 'Article\ArticleController');
@@ -28,6 +31,8 @@ Route::group([
 
     $router->resource('log/userfund', 'Log\LogUserFundController');
     $router->resource('log/sysmessage', 'Log\LogSysMessageController');
+    $router->resource('log/vip', 'Log\LogUserVipController');
+    $router->resource('log/feedback', 'Log\LogFeedbackController');
 
     $router->resource('setting/test', 'Idx\IdxSettingController');
     $router->resource('setting/user_tags', 'Idx\IdxSettingController');
@@ -39,6 +44,10 @@ Route::group([
 
     $router->resource('event/category', 'Event\EventCategoryController');
     $router->resource('event/events', 'Event\EventsController');
+    $router->resource('event/order', 'Event\EventOrderController');
+    $router->resource('event/qa', 'Event\EventQaController');
+    $router->resource('event/orderevaluate', 'Event\EventOrderEvaluateController');
     $router->get('api/category', 'Event\EventCategoryController@api_category');
+
 
 });

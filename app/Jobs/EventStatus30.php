@@ -32,7 +32,7 @@ class EventStatus30 implements ShouldQueue{
             // 获取活动的有效订单
             $orders = (new EventOrderRepository())->use_status_get_event_orders_data($this->event_id, [20]);
             // 将活动的订单状态修改为待评价
-            (new EventOrderRepository())->use_event_id_update_status_30_to_40($this->event_id);
+            (new EventOrderRepository())->use_event_id_update_status_20_to_30($this->event_id);
             // 发送通知
             $user_ids = [];
             foreach($orders as $order){

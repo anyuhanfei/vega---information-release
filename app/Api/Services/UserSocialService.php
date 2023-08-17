@@ -5,7 +5,7 @@ use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\User\UsersRepository;
 use App\Api\Repositories\User\UserTagsRepository;
 use App\Api\Repositories\Events\EventQaRepository;
-
+use App\Api\Repositories\Idx\IdxSettingRepository;
 
 class UserSocialService{
 
@@ -17,9 +17,28 @@ class UserSocialService{
      * @param string $tag
      * @return void
      */
-    public function set_tags_operation(int $user_id, string $type, string $tag){
-        (new UserTagsRepository())->create_data($user_id, $type, $tag);
-        return true;
+    public function set_tags_operation(int $user_id, string $tags){
+        $tags = comma_str_to_array($tags);
+        if(count($tags) > 0){
+            $user_tags = (new UserTagsRepository())->get_user_all_tags($user_id);
+            // $sys_tags = (new IdxSettingRepository())->get
+            foreach($tags as $tag){
+                $res = false;
+                foreach($user_tags as $user_tag){
+                    if($user_tag->type == '选自系统' || $user_tag->type == '自定义'){
+                        if($tag == $user_tag->tag){
+                            // 说明此标签已设置
+                            $res = true;
+                        }
+                    }
+                }
+                if($res == false){
+                    // 标签未添加，需要添加
+                    $sys_tag = (new IdxSettingRepository())->use_tag_get_one_data($tag);
+                    (new UserTagsRepository())->create_data($user_id, $sys_tag ? '选自系统' : "自定义", $tag);
+                }
+            }
+        }
     }
 
     /**

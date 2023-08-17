@@ -27,6 +27,10 @@ class LogUserFund extends Model{
         return $builder->where('coin_type', $value);
     }
 
+    public function scopeFundType(Builder $builder, string $value){
+        return $builder->where("fund_type", "like", $value);
+    }
+
     public function scopeUid(Builder $builder, int $value){
         return $builder->where('uid', $value);
     }

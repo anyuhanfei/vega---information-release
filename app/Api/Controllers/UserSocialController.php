@@ -19,13 +19,11 @@ class UserSocialController extends BaseController{
     /**
      * 标签设置
      *
-     * @param \App\Api\Requests\User\UserTagsSetRequest $request
      * @return void
      */
-    public function tag_set(\App\Api\Requests\User\UserTagsSetRequest $request){
-        $type = $request->input("type");
-        $tag = $request->input("tag");
-        $res = $this->service->set_tags_operation($this->user_id, $type, $tag);
+    public function tag_set(Request $request){
+        $tags = $request->input("tags");
+        $res = $this->service->set_tags_operation($this->user_id, $tags);
         return success("设置成功");
     }
 

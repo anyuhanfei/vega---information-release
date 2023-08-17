@@ -3,7 +3,10 @@ namespace App\Api\Services;
 
 use App\Api\Repositories\Log\LogUserFundRepository;
 use App\Api\Repositories\Log\LogSysMessageRepository;
+use App\Api\Repositories\Log\LogWithdrawRepository;
 use App\Api\Repositories\User\UserFundsRepository;
+use App\Api\Repositories\User\UsersRepository;
+use Illuminate\Support\Facades\DB;
 
 class UserLogService{
     /**
@@ -63,5 +66,42 @@ class UserLogService{
         $data = $LogSysMessageRepository->use_id_get_data_form_redis($id);
         $LogSysMessageRepository->set_read_status($user_id, $data['id']);  # 设置为已读（无论设置如何，这里必须设置已读）
         return $data;
+    }
+
+    /**
+     * 提现操作
+     *
+     * @param integer $user_id
+     * @param string $type
+     * @param float|integer $money
+     * @return void
+     */
+    public function user_withdraw_operation(int $user_id, string $type, float|int $money){
+        $user_money = (new UserFundsRepository())->get_user_fund($user_id, "money");
+        if($user_money < $money){
+            throwBusinessException("当前余额不足");
+        }
+        $user = (new UsersRepository())->use_id_get_one_data($user_id);
+        // TODO::缺少判断，缺少信息
+        DB::beginTransaction();
+        try{
+            (new LogWithdrawRepository())->create_data($user_id, $money, $type, '', '');
+            (new UserFundsRepository())->update_fund($user_id, 'money', $money * -1, "提现申请");
+        }catch(\Exception $e){
+            throwBusinessException($e->getMessage());
+        }
+        return true;
+    }
+
+    /**
+     * 获取提现记录
+     *
+     * @param integer $user_id
+     * @param integer $page
+     * @param integer $limit
+     * @return void
+     */
+    public function user_withdraw_log(int $user_id, int $page, int $limit){
+        return (new LogUserFundRepository())->use_fund_type_get_list($user_id, '提现', $page, $limit);
     }
 }

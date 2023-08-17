@@ -185,6 +185,8 @@ class EventService{
             'time'=> (new EventsRepository())->整理时间数据($event->start_time, $event->end_time),
             'distance'=> get_distance($coordinate['longitude'], $coordinate['latitude'], $event->site_longitude, $event->site_latitude),
             'site_address'=> $event->site_address,
+            'site_longitude'=> $event->site_longitude,
+            'site_latitude'=> $event->site_latitude,
             'service_phone'=> $event->service_phone,
             'award_content'=> $event->award_content,
             'require_content'=> $event->require_content,
