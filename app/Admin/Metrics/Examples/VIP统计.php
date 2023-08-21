@@ -2,12 +2,13 @@
 
 namespace App\Admin\Metrics\Examples;
 
+use App\Models\Log\LogUserVip;
 use Dcat\Admin\Admin;
 use Dcat\Admin\Widgets\Metrics\Donut;
 
-class NewDevices extends Donut
+class VIP统计 extends Donut
 {
-    protected $labels = ['Desktop', 'Mobile'];
+    protected $labels = ['包月', '包季', '包年'];
 
     /**
      * 初始化卡片内容
@@ -17,10 +18,10 @@ class NewDevices extends Donut
         parent::init();
 
         $color = Admin::color();
-        $colors = [$color->primary(), $color->alpha('blue2', 0.5)];
+        $colors = [$color->primary(), $color->alpha('blue2', 0.7), $color->alpha('blue2', 0.4)];
 
-        $this->title('New Devices');
-        $this->subTitle('Last 30 days');
+        $this->title('VIP');
+        $this->subTitle('全部');
         $this->chartLabels($this->labels);
         // 设置图表颜色
         $this->chartColors($colors);
@@ -45,10 +46,13 @@ class NewDevices extends Donut
      */
     public function fill()
     {
-        $this->withContent(44.9, 28.6);
+        $包月_count = LogUserVip::where("vip_name", "包月")->count();
+        $包季_count = LogUserVip::where("vip_name", "包季")->count();
+        $包年_count = LogUserVip::where("vip_name", "包年")->count();
+        $this->withContent($包月_count, $包季_count, $包年_count);
 
         // 图表数据
-        $this->withChart([44.9, 28.6]);
+        $this->withChart([$包月_count, $包季_count, $包年_count]);
     }
 
     /**
@@ -73,9 +77,10 @@ class NewDevices extends Donut
      *
      * @return $this
      */
-    protected function withContent($desktop, $mobile)
+    protected function withContent($包月_count, $包季_count, $包年_count)
     {
-        $blue = Admin::color()->alpha('blue2', 0.5);
+        $blue = Admin::color()->alpha('blue2', 0.7);
+        $blue2 = Admin::color()->alpha('blue2', 0.4);
 
         $style = 'margin-bottom: 8px';
         $labelWidth = 120;
@@ -86,13 +91,19 @@ class NewDevices extends Donut
     <div style="width: {$labelWidth}px">
         <i class="fa fa-circle text-primary"></i> {$this->labels[0]}
     </div>
-    <div>{$desktop}</div>
+    <div>{$包月_count}</div>
 </div>
 <div class="d-flex pl-1 pr-1" style="{$style}">
     <div style="width: {$labelWidth}px">
         <i class="fa fa-circle" style="color: $blue"></i> {$this->labels[1]}
     </div>
-    <div>{$mobile}</div>
+    <div>{$包季_count}</div>
+</div>
+<div class="d-flex pl-1 pr-1" style="{$style}">
+    <div style="width: {$labelWidth}px">
+        <i class="fa fa-circle" style="color: $blue2"></i> {$this->labels[2]}
+    </div>
+    <div>{$包年_count}</div>
 </div>
 HTML
         );

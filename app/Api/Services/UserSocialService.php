@@ -190,7 +190,7 @@ class UserSocialService{
         }else{
             $data = (new \App\Api\Repositories\User\UserAlbumRepository())->get_video_list($user_id, $page, $limit);
             foreach($data as &$v){
-                $v->created_at = date("Y.m.d", strtotime($v->created_at));
+                $v->created_at = date("Y-m-d", strtotime($v->created_at));
             }
         }
         return $data;

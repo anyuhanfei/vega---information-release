@@ -285,13 +285,32 @@ class UsersRepository{
     }
 
     /**
+     * 清空会员的关注、粉丝
+     *
+     * @param [type] $user_id
+     * @return void
+     */
+    public function clear_attention($user_id){
+        foreach($this->get_attention_list($user_id) as $other_id){
+            // 获取我关注的所有人, 删除这些人的粉丝列表中我的id
+            Redis::srem("byat:{$other_id}", $user_id);
+        }
+        foreach($this->get_fans_list($user_id) as $other_id){
+            // 获取关注我的所有人，删除这些人关注列表中的我的id
+            Redis::srem("at:{$other_id}", $user_id);
+        }
+        Redis::del("at:{$user_id}");
+        Redis::del("byat:{$user_id}");
+    }
+
+    /**
      * 获取一批会员的基本信息，用于展示粉丝、关注等会员列表
      *
      * @param integer $user_ids
      * @return void
      */
     public function get_users_basic_data(array $user_ids){
-        return $this->eloquentClass::id($user_ids)->select(['id', 'avatar', 'nickname', 'age', 'bio'])->get();
+        return $this->eloquentClass::id($user_ids)->select(['id', 'avatar', 'nickname', 'age', 'bio', 'sex'])->get();
     }
 
     /**

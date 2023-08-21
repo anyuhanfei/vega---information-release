@@ -2,11 +2,12 @@
 
 namespace App\Admin\Metrics\Examples;
 
+use App\Models\User\Users;
 use Dcat\Admin\Admin;
 use Dcat\Admin\Widgets\Metrics\Bar;
 use Illuminate\Http\Request;
 
-class Sessions extends Bar
+class 用户统计 extends Bar
 {
     /**
      * 初始化卡片内容
@@ -22,13 +23,10 @@ class Sessions extends Bar
         // 卡片内容宽度
         $this->contentWidth(5, 7);
         // 标题
-        $this->title('Avg Sessions');
+        $this->title('用户统计');
         // 设置下拉选项
         $this->dropdown([
-            '7' => 'Last 7 Days',
-            '28' => 'Last 28 Days',
-            '30' => 'Last Month',
-            '365' => 'Last Year',
+            '7' => '近7天',
         ]);
         // 设置图表颜色
         $this->chartColors([
@@ -53,14 +51,23 @@ class Sessions extends Bar
         switch ($request->get('option')) {
             case '7':
             default:
+                // 总人数、今日新增人数
+                $user_count = Users::count();
+                $new_user_count = Users::whereDate("created_at", date("Y-m-d", time()))->count();
+                $yesterday_user_count = Users::whereDate("created_at", date("Y-m-d", time() - 86400))->count();
+                $two_day_before_user_count = Users::whereDate("created_at", date("Y-m-d", time() - (86400 * 2)))->count();
+                $three_day_before_user_count = Users::whereDate("created_at", date("Y-m-d", time() - (86400 * 3)))->count();
+                $four_day_before_user_count = Users::whereDate("created_at", date("Y-m-d", time() - (86400 * 4)))->count();
+                $five_day_before_user_count = Users::whereDate("created_at", date("Y-m-d", time() - (86400 * 5)))->count();
+                $six_day_before_user_count = Users::whereDate("created_at", date("Y-m-d", time() - (86400 * 6)))->count();
                 // 卡片内容
-                $this->withContent('2.7k', '+5.2%');
+                $this->withContent($user_count, $new_user_count);
 
                 // 图表数据
                 $this->withChart([
                     [
-                        'name' => 'Sessions',
-                        'data' => [75, 125, 225, 175, 125, 75, 25],
+                        'name' => '当日新增',
+                        'data' => [$six_day_before_user_count, $five_day_before_user_count, $four_day_before_user_count, $three_day_before_user_count, $two_day_before_user_count, $yesterday_user_count, $new_user_count],
                     ],
                 ]);
         }
@@ -104,12 +111,10 @@ class Sessions extends Bar
     <div class="text-left">
         <h1 class="font-lg-2 mt-2 mb-0">{$title}</h1>
         <h5 class="font-medium-2" style="margin-top: 10px;">
+            <span>今天新增: </span>
             <span class="text-{$style}">{$value} </span>
-            <span>vs {$label}</span>
         </h5>
     </div>
-
-    <a href="#" class="btn btn-primary shadow waves-effect waves-light">View Details <i class="feather icon-chevrons-right"></i></a>
 </div>
 HTML
         );

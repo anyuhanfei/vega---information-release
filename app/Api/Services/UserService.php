@@ -192,6 +192,8 @@ class UserService{
         }
         DB::beginTransaction();
         try{
+            // 删除关注、粉丝
+            (new UsersRepository())->clear_attention($user_id);
             // 删除会员信用分、余额
             (new UserFundsRepository())->init_data($user_id);
             // 删除会员信息、VIP

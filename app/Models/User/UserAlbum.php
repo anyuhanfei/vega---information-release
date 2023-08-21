@@ -2,8 +2,10 @@
 
 namespace App\Models\User;
 
+use Dcat\Admin\Traits\HasDateTimeFormatter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\BaseFilter;
 
 /**
@@ -11,8 +13,9 @@ use App\Models\BaseFilter;
  */
 class UserAlbum extends Model{
     use BaseFilter;
+    use HasDateTimeFormatter;
+    use SoftDeletes;
 
-    public $timestamps = false;
     protected $guarded = [];
     protected $table = "user_album";
 

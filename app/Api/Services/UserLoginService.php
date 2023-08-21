@@ -42,7 +42,7 @@ class UserLoginService{
                 throwBusinessException('请先从第三方获取数据');
             }
         }
-        $avatar = $avatar == '' ? (new SysAdRepository())->use_id_get_one_data(17)->value : $avatar;
+        $avatar = $avatar == '' ? (new SysAdRepository())->use_id_get_one_data(28)->value : $avatar;
         $nickname = $nickname == '' ? '用户' . create_captcha(8, 'lowercase+uppercase+figure') : $nickname;
         $sex = $sex == '' ? '保密' : $sex;
         $res = $this->repository->create_data([
