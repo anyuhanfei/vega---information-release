@@ -46,7 +46,7 @@ class EventOrderController extends AdminController{
                 }
             });
             $grid->column('information_of_registration_value')->width("200px")->display(function(){
-                $value = json_decode($this->information_of_registration_value);
+                $value = json_decode($this->information_of_registration_value) ?? [];
                 $str = "";
                 foreach($value as $k=> $v){
                     $str .= $k . '：' . $v . '<br/>';

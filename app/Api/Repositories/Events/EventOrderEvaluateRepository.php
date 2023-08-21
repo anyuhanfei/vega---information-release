@@ -19,5 +19,30 @@ class EventOrderEvaluateRepository{
             'tags' => $tags,
         ]);
     }
+
+    public function use_event_id_get_data(int $event_id){
+        return $this->eloquentClass::eventId($event_id)->get();
+    }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
+    }
+
+    /**
+     * 删除指定发布者的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_publisher_data(int $user_id){
+        return $this->eloquentClass::publisherId($user_id)->delete();
+    }
 }
+
 

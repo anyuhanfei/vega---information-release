@@ -17,7 +17,7 @@ class LogWithdraw extends Model{
     protected $guarded = [];
 
     public function user(){
-        return $this->hasOne(\App\Models\User\Users::class, 'id', 'user_id')->withTrashed();
+        return $this->hasOne(\App\Models\User\Users::class, 'id', 'user_id');
     }
 
     public function status_array(){

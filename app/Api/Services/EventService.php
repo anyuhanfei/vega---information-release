@@ -103,10 +103,10 @@ class EventService{
             $where['sex'] = $search['sex'];
         }
         if(!empty($search['category_id']) && $search['category_id'] != ''){
-            $where['oneLevelCategoryId'] = $search['category_id'];
+            $where['twoLevelCategoryId'] = $search['category_id'];
         }
         if(!empty($search['date']) && $search['date'] != ''){
-            //TODO
+            $where['statusTime'] = $search['date'];
         }
         // 获取数据并整理排序
         $list = (new EventsRepository())->use_search_get_list($where);
@@ -129,9 +129,9 @@ class EventService{
 
     public function get_user_event_list(int $user_id, int $page, int $limit, int $other_id = 0, array $status = []){
         if($other_id != 0){  // 查看他人的活动列表
-            $where['user_id'] = $other_id;
+            $where['userId'] = $other_id;
         }else{  // 查看自己的活动列表
-            $where['user_id'] = $user_id;
+            $where['userId'] = $user_id;
         }
         $where['status'] = $status;
         $list = (new EventsRepository())->use_search_get_list($where, $page, $limit);
@@ -207,6 +207,7 @@ class EventService{
         }
         $event->one_level_category = $event->one_level_category;
         $event->two_level_category = $event->two_level_category;
+        $event->information_of_registration_key = (new IdxSettingRepository())->get_information_of_registration_key_details(comma_str_to_array($event->information_of_registration_key));
         return $event;
     }
 

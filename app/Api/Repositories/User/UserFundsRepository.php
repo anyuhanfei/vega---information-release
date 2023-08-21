@@ -25,6 +25,20 @@ class UserFundsRepository{
     }
 
     /**
+     * 初始化会员资产信息
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function init_data(int $user_id){
+        $初始信用分 = (new SysSettingRepository())->use_id_get_value(32);
+        return $this->eloquentClass::where("id", $user_id)->update([
+            'money'=> 0,
+            'credit'=> intval($初始信用分),
+        ]);
+    }
+
+    /**
      * 对会员的资金进行操作并添加记录信息
      * 正常情况下，需要在事务内调用此方法，可以让悲观锁生效
      *

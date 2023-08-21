@@ -92,7 +92,7 @@ class Events extends Model{
         return $builder->where("user_id", $value);
     }
 
-    public function scopeTitle(Builder $builder, int $value){
+    public function scopeTitle(Builder $builder, string $value){
         return $builder->where("title", 'like', '%'.$value.'%');
     }
 
@@ -119,6 +119,10 @@ class Events extends Model{
 
     public function scopeTwoLevelCategoryId(Builder $builder, int $value){
         return $builder->where("two_level_category_id", $value);
+    }
+
+    public function scopeStartTime(Builder $builder, int $value){
+        return $builder->where("start_time", 'like', '%'.$value.'%');
     }
 
     public function scopeStatus(Builder $builder, int|array $value){

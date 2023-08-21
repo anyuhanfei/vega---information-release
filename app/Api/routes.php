@@ -44,6 +44,8 @@ Route::group([
     $router->post('test/fund', [\App\Api\Controllers\UserLogController::class, 'test_fund']);
     $router->post('user/log/sysmessage', [\App\Api\Controllers\UserLogController::class, 'sys_message_log']);
     $router->post('user/log/sysmessage/detail', [\App\Api\Controllers\UserLogController::class, 'sys_message_detail']);
+    $router->post('user/withdraw', [\App\Api\Controllers\UserLogController::class, 'withdraw']);
+    $router->post('user/withdraw/log', [\App\Api\Controllers\UserLogController::class, 'withdraw_log']);
 
     // 会员密码
     $router->post('user/update_password', [\App\Api\Controllers\UserController::class, 'update_password']);
@@ -63,6 +65,10 @@ Route::group([
     $router->post('user/vip/pay', [\App\Api\Controllers\PayController::class, 'vip']);
     $router->post('user/coordinate', [\App\Api\Controllers\UserController::class, 'set_coordinate']);
     $router->post('user/credit', [\App\Api\Controllers\UserController::class, 'credit']);
+    $router->post('auto/vip/check', [\App\Api\Controllers\UserController::class, 'auto_vip_check']);
+
+    $router->post('user/restart', [\App\Api\Controllers\UserController::class, 'restart']);
+    $router->post('user/write/off', [\App\Api\Controllers\UserController::class, 'write_off']);
 
     // 活动
     $router->post('release/price', [\App\Api\Controllers\SysController::class, 'release_price']);
@@ -76,13 +82,15 @@ Route::group([
     $router->post('event/other/list', [\App\Api\Controllers\EventController::class, 'other_event_list']);
     $router->post('event/user/list', [\App\Api\Controllers\EventController::class, 'user_event_list']);
     $router->post('event/user/cancel', [\App\Api\Controllers\EventController::class, 'user_event_cancel']);
-
+    $router->post('event/user/detail', [\App\Api\Controllers\EventController::class, 'user_event_detail']);
+    
     // 活动订单
     $router->post('event/order/create', [\App\Api\Controllers\EventOrderController::class, 'order_create']);
     $router->post('event/order/list', [\App\Api\Controllers\EventOrderController::class, 'event_orders']);
     $router->post('event/order/audit', [\App\Api\Controllers\EventOrderController::class, 'event_order_audit']);
     $router->post('event/other/order', [\App\Api\Controllers\EventOrderController::class, 'other_orders']);
     $router->post('event/user/order', [\App\Api\Controllers\EventOrderController::class, 'user_orders']);
+    $router->post('event/user/order/detail', [\App\Api\Controllers\EventOrderController::class, 'user_order_detail']);
     $router->post('event/user/order/cancel', [\App\Api\Controllers\EventOrderController::class, 'user_order_cancel']);
     $router->post('event/user/order/evaluate', [\App\Api\Controllers\EventOrderController::class, 'user_order_evaluate']);
     $router->post('event/user/order/feedback', [\App\Api\Controllers\EventOrderController::class, 'user_order_feedback']);

@@ -167,5 +167,36 @@ class EventOrderRepository{
         ]);
     }
 
+    public function 一起玩过次数(int $user_id, int $other_id){
+        $user_event_ids = $this->eloquentClass::userId($user_id)->status([40, 50])->groupBy('event_id')->pluck("event_id");
+        $other_event_ids = $this->eloquentClass::userId($other_id)->status([40, 50])->groupBy('event_id')->pluck("event_id");
+        $number = 0;
+        foreach($user_event_ids as $v){
+            if(in_array($v, $other_event_ids)){
+                $number += 1;
+            }
+        }
+        return $number;
+    }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
+    }
+
+    /**
+     * 删除指定发布者的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_publisher_data(int $user_id){
+        return $this->eloquentClass::publisherId($user_id)->delete();
+    }
 }
 

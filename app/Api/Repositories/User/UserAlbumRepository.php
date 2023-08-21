@@ -66,4 +66,14 @@ class UserAlbumRepository{
     public function get_video_list(int $user_id, int $page, int $limit){
         return $this->eloquentClass::userId($user_id)->page($page, $limit)->where("video", '<>', '')->select(['id', 'image', 'video', 'title', 'created_at'])->get();
     }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
+    }
 }

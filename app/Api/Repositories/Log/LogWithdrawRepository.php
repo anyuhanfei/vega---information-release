@@ -15,4 +15,14 @@ class LogWithdrawRepository{
             'username'=> $username,
         ]);
     }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
+    }
 }

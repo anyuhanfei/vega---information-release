@@ -80,4 +80,8 @@ class LogSysMessageRepository{
         (new AdminLogSysMessage())->save_uid_to_redis($data->id, $user_ids);
         (new AdminLogSysMessage())->save_data_to_redis($data->id, $title, $image, $message);
     }
+
+    public function delete_user_data(int $user_id){
+        return Redis::del("sysmessage:{$user_id}");
+    }
 }

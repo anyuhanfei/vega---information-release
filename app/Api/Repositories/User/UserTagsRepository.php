@@ -82,4 +82,22 @@ class UserTagsRepository{
         }
         return ['status'=> !$status, 'number'=> $number];
     }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
+    }
+
+    public function delete_user_like_data(int $user_id){
+        $keys = Redis::keys("tk:{$user_id}:*");
+        foreach($keys as $key){
+            Redis::del($key);
+        }
+        return true;
+    }
 }

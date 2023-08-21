@@ -131,7 +131,7 @@ class EventOrderController extends BaseController{
      * @return void
      */
     public function user_order_feedback(\App\Api\Requests\Events\UserOrderFeedbackRequest $request){
-        $order_no = $request->input('order_no');
+        $order_no = $request->input('order_no' ?? '') ?? '';
         $title = $request->input("title");
         $content = $request->input("content");
         $images = $request->input("images" ?? '') ?? '';

@@ -86,7 +86,8 @@ class ArticleController extends BaseController{
             $grid->selector(function (Grid\Tools\Selector $selector) {
                 $selector->select('category_id', '分类', (new ArticleCategory())->get_all_data());
             });
-
+            $grid->disableViewButton();
+            $grid->disableCreateButton();
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
                 $filter->like('title');
@@ -111,14 +112,14 @@ class ArticleController extends BaseController{
             $show->field('title');
             $show->field('author');
             $show->field('image')->image();
-            $show->field('tag_ids')->as(function(){
-                $tag = (new ArticleTag())->use_ids_get_data($this->tag_ids);
-                $str = '';
-                foreach ($tag as $value) {
-                    $str .= $value->name . ' ';
-                }
-                return $str;
-            });
+            // $show->field('tag_ids')->as(function(){
+            //     $tag = (new ArticleTag())->use_ids_get_data($this->tag_ids);
+            //     $str = '';
+            //     foreach ($tag as $value) {
+            //         $str .= $value->name . ' ';
+            //     }
+            //     return $str;
+            // });
             $show->field('category_id')->as(function(){
                 return (new ArticleCategory())->use_id_get_name($this->category_id);
             });;
@@ -180,7 +181,7 @@ class ArticleController extends BaseController{
                 $data_id = $form->model()->toArray()[0]['id'];
                 (new ArticleRepository())->del_cache($data_id);
             });
-
+            $form->disableDeleteButton();
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();
             });

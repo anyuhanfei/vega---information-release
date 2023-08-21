@@ -111,8 +111,8 @@ class SysSettingController extends BaseController{
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();
             });
-            if($form->model()->input_type == 'number' && ctype_digit($form->value) == false){
-                $form->responseValidationMessages('value', '请输入纯数字');
+            if($form->model()->input_type == 'number' && ($form->value != floatval($form->value))){
+                $form->responseValidationMessages('value', '请输入整数');
             }
             $form->saving(function (Form $form) {
                 $form->value = $form->value ?? '';

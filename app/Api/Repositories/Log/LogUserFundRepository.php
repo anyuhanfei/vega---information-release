@@ -55,6 +55,16 @@ class LogUserFundRepository{
     }
 
     public function use_fund_type_get_list(int $user_id, string $fund_type, int $page, int $limit){
-        return $this->eloquentClass::userId($user_id)->fundType($fund_type)->page($page, $limit)->get();
+        return $this->eloquentClass::userId($user_id)->fundType('%'.$fund_type.'%')->page($page, $limit)->get();
+    }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
     }
 }

@@ -30,16 +30,16 @@ class LogFeedbackController extends AdminController
                 }
             });
             $grid->column('title', '举报内容')->width("400px")->display(function(){
-                return "<b>" . $this->title . "&nbsp;(订单编号：" . $this->order_no . ")</b><br/>" . $this->content;
+                return "<b>" . $this->title . "</b><br/>" . $this->content;
             });
-            $grid->column('images')->image("", 40, 40)->display(function(){
+            $grid->column('images')->display(function(){
                 return $this->images == '' ? '' : comma_str_to_array($this->images);
-            });
+            })->image("", 40, 40);
             $grid->column('admin_remark')->editable()->help("这里仅管理员后台自己查看");
             $grid->column('is_reply')->using((new LogFeedback())->model()->is_reply_array())->dot([
                     0 => Admin::color()->yellow(),
                     1 => 'success',
-                ], 
+                ],
                 'primary'
             );
             $grid->column('created_at');
@@ -47,7 +47,7 @@ class LogFeedbackController extends AdminController
             $grid->disableCreateButton();
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
-                $filter->like('order_no', '订单编号');
+                // $filter->like('order_no', '订单编号');
                 $filter->equal("user_id");
                 $filter->like("user.nickname", "报名人昵称");
                 $filter->like("user.phone", '会员手机号');

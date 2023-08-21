@@ -12,7 +12,7 @@ class UserOrderFeedbackRequest extends BaseRequest{
 
     public function rules(){
         return [
-            'order_no'=> ['required'],
+            // 'order_no'=> ['required'],
             'title' => ['required'],
             'content' => ['required'],
         ];
@@ -20,7 +20,7 @@ class UserOrderFeedbackRequest extends BaseRequest{
 
     public function messages(){
         return [
-            'order_no.required'=> '请选择订单',
+            // 'order_no.required'=> '请选择订单',
             'title.required'=> '请输入举报原因',
             'content.required'=> '请输入举报内容',
         ];

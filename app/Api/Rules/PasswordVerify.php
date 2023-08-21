@@ -16,7 +16,7 @@ class PasswordVerify implements Rule, DataAwareRule{
 
     public function passes($attribute, $value){
         $UsersRepository = new UsersRepository();
-        $user = $UsersRepository->use_id_get_one_data($this->data['uid']);
+        $user = $UsersRepository->use_id_get_one_data($this->data['user_id']);
         if(!$user){
             return false;
         }

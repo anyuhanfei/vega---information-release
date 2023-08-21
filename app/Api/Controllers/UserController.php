@@ -79,4 +79,29 @@ class UserController extends BaseController{
         $data = (new UserService())->get_user_credit($other_id == 0 ? $this->user_id : $other_id);
         return success("信用信息", $data);
     }
+
+    /**
+     * 定时任务，检测会员的VIP是否已过期
+     *
+     * @return void
+     */
+    public function auto_vip_check(){
+        (new UserService())->vip_check_operation();
+    }
+
+    /**
+     * 重新来过
+     *
+     * @return void
+     */
+    public function restart(){
+        $res = (new UserService())->restart_operation($this->user_id);
+        return success("重置成功");
+    }
+
+    public function write_off(){
+        $res = (new UserService())->write_off_operation($this->user_id);
+        return success("注销成功");
+    }
+
 }

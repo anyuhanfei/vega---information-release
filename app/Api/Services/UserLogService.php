@@ -87,7 +87,9 @@ class UserLogService{
         try{
             (new LogWithdrawRepository())->create_data($user_id, $money, $type, '', '');
             (new UserFundsRepository())->update_fund($user_id, 'money', $money * -1, "提现申请");
+            DB::commit();
         }catch(\Exception $e){
+            DB::rollBack();
             throwBusinessException($e->getMessage());
         }
         return true;

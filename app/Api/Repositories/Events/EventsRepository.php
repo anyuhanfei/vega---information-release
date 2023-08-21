@@ -91,9 +91,13 @@ class EventsRepository{
      * @return void
      */
     public function use_search_get_list(array $where, int $page = 1, int $limit = 100){
-        $ids = $where['id'];
+        $ids = $where['id'] ?? [];
         unset($where['id']);
-        return $this->eloquentClass::with(['user'])->id($ids)->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude', 'reject_cause'])->get();
+        $obj = $this->eloquentClass::with(['user']);
+        if(count($ids) > 0){
+            $obj = $obj->id($ids);
+        }
+        return $obj->apply($where)->select(['id', "title", 'image', 'start_time', 'end_time', 'user_id', 'status', 'site_longitude', 'site_latitude', 'reject_cause'])->get();
     }
 
     /**
@@ -154,5 +158,19 @@ class EventsRepository{
         return $this->eloquentClass::id($event_id)->update([
             'status'=> $status,
         ]);
+    }
+
+    public function 获取会员正在进行的活动数量(int $user_id):int{
+        return $this->eloquentClass::userId($user_id)->status([20, 30])->count();
+    }
+
+    /**
+     * 删除指定会员的日志
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user_data(int $user_id){
+        return $this->eloquentClass::userId($user_id)->delete();
     }
 }

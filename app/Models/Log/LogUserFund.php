@@ -20,7 +20,7 @@ class LogUserFund extends Model{
     protected $guarded = [];
 
     public function user(){
-        return $this->hasOne(Users::class, 'id', 'user_id')->withTrashed();
+        return $this->hasOne(Users::class, 'id', 'user_id');
     }
 
     public function scopeCoinType(Builder $builder, string $value){
@@ -31,8 +31,8 @@ class LogUserFund extends Model{
         return $builder->where("fund_type", "like", $value);
     }
 
-    public function scopeUid(Builder $builder, int $value){
-        return $builder->where('uid', $value);
+    public function scopeUserId(Builder $builder, int $value){
+        return $builder->where('user_id', $value);
     }
 
     protected function CoinType(): Attribute{

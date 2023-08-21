@@ -90,7 +90,7 @@ class EventOrderService{
         if($order->status != 10){
             throwBusinessException("订单已审核");
         }
-        if($status == '拒绝'){
+        if($status == '拒接'){
             (new EventOrderRepository())->use_order_no_update_status($order_no, 19);
             //TODO：：退款
 
@@ -128,6 +128,7 @@ class EventOrderService{
                 'event_start_time'=> date("m月d日", strtotime($v->event->start_time)),
                 'user_number'=> $user_number,
                 'user_avatars'=> $user_avatars,
+                'address'=> $v->event->site_address,
             ];
         }
         return $data;
@@ -150,14 +151,15 @@ class EventOrderService{
             $data[] = [
                 'order_no'=> $v->order_no,
                 'distance'=> get_distance($coordinate['longitude'], $coordinate['latitude'], $v->site_longitude, $v->site_latitude),
-                'time'=> (new EventsRepository())->整理时间数据($v->event->start_time, $v->event->end_time),
-                'publisher_avatar'=> $v->publisher->avatar,
+                'event_start_time'=> date("m月d日", strtotime($v->event->start_time)),
+                'publisher_avatar'=> $v->publisher->avatar,'event_start_time'=> date("m月d日", strtotime($v->event->start_time)),
                 'publisher_nickname'=> $v->publisher->nickname,
                 'event_image'=> $v->event->image,
                 'event_title'=> $v->event->title,
                 'status'=> $v->status,
                 'user_number'=> $user_number,
                 'user_avatars'=> $user_avatars,
+                'address'=> $v->event->site_address,
             ];
         }
         return $data;
@@ -185,7 +187,7 @@ class EventOrderService{
             'event_image'=> $order->event->image,
             'event_title'=> $order->event->title,
             'status'=> $order->status,
-            'created_at'=> $order->created_at,
+            'created_at'=> date("Y-m-d H:i:s", strtotime($order->created_at)),
             'all_price'=> $order->all_price,
             'number'=> $order->number,
         ];

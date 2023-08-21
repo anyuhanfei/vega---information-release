@@ -18,7 +18,7 @@ class UserSocialService{
      * @return void
      */
     public function set_tags_operation(int $user_id, string $tags){
-        $tags = comma_str_to_array($tags);
+        $tags = array_unique(comma_str_to_array($tags));
         if(count($tags) > 0){
             $user_tags = (new UserTagsRepository())->get_user_all_tags($user_id);
             // $sys_tags = (new IdxSettingRepository())->get
@@ -61,6 +61,9 @@ class UserSocialService{
      * @return void
      */
     public function attention_operation(int $user_id, int $other_id){
+        if($user_id == $other_id){
+            throwBusinessException("不能关注自己");
+        }
         $res_data = (new UsersRepository())->set_attention($user_id, $other_id);
         return $res_data;
     }

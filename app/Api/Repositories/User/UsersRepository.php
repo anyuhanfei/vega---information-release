@@ -2,7 +2,7 @@
 
 namespace App\Api\Repositories\User;
 
-
+use App\Api\Repositories\Sys\SysSettingRepository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
@@ -22,8 +22,10 @@ class UsersRepository{
      * @param [type] $field_values
      * @return void
      */
-    public function create_data($field_values){
-        $field_values['password'] = $this->set_password($field_values['password']);
+    public function create_data($field_values, $encrypt_password = true){
+        if($encrypt_password){
+            $field_values['password'] = $this->set_password($field_values['password']);
+        }
         $obj = $this->eloquentClass::create($field_values);
         (new UserFundsRepository())->create_data($obj->id);
         (new UserDetailRepository())->create_data($obj->id);
@@ -255,7 +257,7 @@ class UsersRepository{
         return Redis::scard("at:{$user_id}") ?? 0;
     }
 
-    public function get_face_count(int $user_id):int{
+    public function get_fans_count(int $user_id):int{
         return Redis::scard("byat:{$user_id}") ?? 0;
     }
 
@@ -348,5 +350,46 @@ class UsersRepository{
             ]);
         }
         return ['start_time'=> date("Y-m-d H:i:s", $start_time), 'expriation_time'=> $expriation_time];
+    }
+
+    public function 清理已过期VIP(){
+        $this->eloquentClass::whereDate("vip_expriation_time", '<',  date("Y-m-d H:i:s", time()))->whereTime("vip_expriation_time", '<', date("Y-m-d H:i:s", time()))->update([
+            'vip'=> '',
+            'vip_expriation_time'=> null
+        ]);
+    }
+
+    /**
+     * 删除会员
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function delete_user(int $user_id){
+        $this->eloquentClass::where("id", $user_id)->delete();
+    }
+
+    public function 清理会员数据(int $user_id){
+        return $this->eloquentClass::where("id", $user_id)->update([
+            'bio'=> '',
+            'vip'=> '',
+            'vip_expriation_time'=> null,
+        ]);
+    }
+
+    public function set_restart(int $user_id){
+        return Redis::set("restart:{$user_id}", time());
+    }
+
+    /**
+     * 判断是否可重新来过
+     *
+     * @param integer $user_id
+     * @return void
+     */
+    public function check_restart(int $user_id){
+        $上次重新来过时间 = Redis::get("restart:{$user_id}") ?? 0;
+        $冷却时间 = (new SysSettingRepository())->use_id_get_value(34) * 86400;
+        return ($上次重新来过时间 + $冷却时间) < time();
     }
 }

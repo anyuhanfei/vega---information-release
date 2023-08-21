@@ -33,6 +33,7 @@ Route::group([
     $router->resource('log/sysmessage', 'Log\LogSysMessageController');
     $router->resource('log/vip', 'Log\LogUserVipController');
     $router->resource('log/feedback', 'Log\LogFeedbackController');
+    $router->resource('log/withdraw', 'Log\LogWithdrawController');
 
     $router->resource('setting/test', 'Idx\IdxSettingController');
     $router->resource('setting/user_tags', 'Idx\IdxSettingController');

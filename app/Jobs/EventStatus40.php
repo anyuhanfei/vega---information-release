@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 use App\Api\Repositories\Events\EventsRepository;
 use App\Api\Repositories\Log\LogSysMessageRepository;
+use App\Api\Repositories\Sys\SysSettingRepository;
 use App\Api\Repositories\User\UserFundsRepository;
 
 class EventStatus40 implements ShouldQueue{
@@ -46,6 +47,9 @@ class EventStatus40 implements ShouldQueue{
             }
             // 将活动订单支付的金额添加到举办者余额
             (new UserFundsRepository())->update_fund($event->user_id, 'money', $pay_money, '活动结束', '活动结束结算报名费');
+            // 开启结算活动的队列
+            $时间 = ((new SysSettingRepository())->use_id_get_value(35) ?? 3) * 24 * 60;
+            \App\Jobs\EventFinal::dispatch($this->event_id)->delay(now()->addMinutes($时间));
         }
     }
 }
